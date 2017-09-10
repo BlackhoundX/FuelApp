@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="fuel_api_key" templateMergeStrategy="preserve" translatable="false"></string>
+    <string name="fuel_api_base64" templateMergeStrategy="preserve" translatable="false"></string>
+</resources>

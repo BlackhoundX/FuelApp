@@ -1,8 +1,10 @@
 package inft3970.fuelapp;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -10,10 +12,12 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnCameraIdleListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -24,11 +28,15 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final String TAG = FuelMapActivity.class.getSimpleName();
     private GoogleMap mMap;
     private CameraPosition mCameraPosition;
+    private ProgressDialog pDialog;
 
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
@@ -42,6 +50,14 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
 
     private boolean mLocationPermissionGranted;
 
+    private static String authCode;
+    private LatLng center;
+    private static String[] authHeaders;
+    private static String[][] headers;
+    private static String body;
+    private String fuelAPIKey;
+    private int transactionId = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +70,10 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         setContentView(R.layout.activity_fuel_map);
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        fuelAPIKey = getString(R.string.fuel_api_key);
+        authHeaders = new String[]{"Authorization", getResources().getString(R.string.fuel_api_base64)};
+
+        new getAuthOCode().execute();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -94,6 +114,14 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         getLocationPermission();
         updateLocationUI();
         getDeviceLocation();
+
+        mMap.setOnCameraIdleListener(new OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                center = mMap.getCameraPosition().target;
+                mMap.addMarker(new MarkerOptions().position(center));
+            }
+        });
     }
 
     private void getDeviceLocation() {
@@ -160,4 +188,92 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
             Log.e("Exception: %s", e.getMessage());
         }
     }
+    private class getFuelStationsRadius extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected  void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(FuelMapActivity.this);
+            pDialog.setMessage("Displaying Pins...");
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void...arg0) {
+            HttpHandler httpHdlr = new HttpHandler();
+            String urlRadius = "https://api.onegov.nsw.gov.au/FuelPriceCheck/v1/fuel/prices/nearby";
+            String jsonStr = httpHdlr.getServiceCall(urlRadius, "POST", headers, body);
+            Log.e(TAG, "response from url: " + jsonStr);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            if(pDialog.isShowing()) {
+                pDialog.dismiss();
+            }
+        }
+    }
+
+    private class getAuthOCode extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected  void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(FuelMapActivity.this);
+            pDialog.setMessage("Get Authorization Code...");
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void...arg0) {
+            HttpHandler httpHdlr = new HttpHandler();
+            String urlAuthCode = "https://api.onegov.nsw.gov.au/oauth/client_credential/accesstoken?grant_type=client_credentials";
+            String jsonStr = httpHdlr.getAuthServiceCall(urlAuthCode, "GET", authHeaders, null);
+            Log.e(TAG, "response from url: " + jsonStr);
+            if(jsonStr != null) {
+                try {
+                    JSONObject authList = new JSONObject(jsonStr);
+                    authCode = authList.getString("access_token");
+                } catch (final JSONException e) {
+                    Log.e(TAG, "Json parsing error: " + e.getMessage());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(),
+                                    "Json parsing error: " + e.getMessage(),
+                                    Toast.LENGTH_LONG)
+                                    .show();
+                        }
+                    });
+
+                }
+            } else {
+                Log.e(TAG, "Couldn't get json from server.");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(),
+                                "Couldn't get json from server. Check LogCat for possible errors!",
+                                Toast.LENGTH_LONG)
+                                .show();
+                    }
+                });
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            if(pDialog.isShowing()) {
+                pDialog.dismiss();
+            }
+        }
+    }
+
 }
+
+
