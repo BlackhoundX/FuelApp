@@ -28,8 +28,17 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
 
 public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -44,6 +53,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
     private static final int DEFAULT_ZOOM = 15;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private Location mLastKnownLocation;
+    private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a", Locale.ENGLISH);
 
     private final String KEY_CAMERA_POSITION = "camera_position";
     private final String KEY_LOCATION = "location";
@@ -57,6 +67,9 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
     private static String body;
     private String fuelAPIKey;
     private int transactionId = 0;
+
+    ArrayList<HashMap<String, String>> stationList;
+    String[] stationType = new String[]{"7-Eleven","BP", "Budget","Caltex","Caltex Woolworths","Coles Express","Costco","Enhance","Independent","Liberty","Lowes","Matilda","Metro Fuel","Mobil","Prime Petroleum","Puma Energy","Shell","Speedway","Tesla","United","Westside"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,10 +120,6 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         mMap.setLatLngBoundsForCameraTarget(NSW);
         mMap.setMinZoomPreference(5.5f);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(NSW.getCenter(), 5.5f));
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-
         getLocationPermission();
         updateLocationUI();
         getDeviceLocation();
@@ -119,7 +128,24 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
             @Override
             public void onCameraIdle() {
                 center = mMap.getCameraPosition().target;
-                mMap.addMarker(new MarkerOptions().position(center));
+                mMap.clear();
+                stationList = new ArrayList<HashMap<String, String>>();
+                Date time = new Date();
+                String timeString = dateFormat.format(time);
+                headers = new String[][]{{"apikey", fuelAPIKey}, {"transactionid", Integer.toString(transactionId++)}, {"requesttimestamp", timeString}, {"Content-Type", "application/json; charset=utf-8"}, {"Authorization", "Bearer "+authCode}};
+                body = "{" +
+                        "    \"fueltype\":\"P95\"," +
+                        "    \"brand\":[" + getAllStations() + "]," +
+                        "    \"namedlocation\":\"location\"," +
+                        "    \"latitude\":\"" + Double.toString(center.latitude) + "\"," +
+                        "    \"longitude\":\"" + Double.toString(center.longitude) + "\"," +
+                        "    \"radius\":\"10\"," +
+                        "    \"sortby\": \"price\"," +
+                        "    \"sortascending\":\"true\"" +
+                        "}";
+                if(authCode != null) {
+                    new getFuelStationsRadius().execute();
+                }
             }
         });
     }
@@ -188,6 +214,14 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
             Log.e("Exception: %s", e.getMessage());
         }
     }
+
+    private String getAllStations() {
+        String allStations = "";
+        for(String station:stationType) {
+            allStations += "\"" + station +"\"";
+        }
+        return allStations;
+    }
     private class getFuelStationsRadius extends AsyncTask<Void, Void, Void> {
 
         @Override
@@ -201,10 +235,81 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
 
         @Override
         protected Void doInBackground(Void...arg0) {
-            HttpHandler httpHdlr = new HttpHandler();
-            String urlRadius = "https://api.onegov.nsw.gov.au/FuelPriceCheck/v1/fuel/prices/nearby";
-            String jsonStr = httpHdlr.getServiceCall(urlRadius, "POST", headers, body);
-            Log.e(TAG, "response from url: " + jsonStr);
+            if(authCode != null) {
+                HttpHandler httpHdlr = new HttpHandler();
+                String urlRadius = "https://api.onegov.nsw.gov.au/FuelPriceCheck/v1/fuel/prices/nearby";
+                String jsonStr = httpHdlr.getServiceCall(urlRadius, "POST", headers, body);
+                Log.e(TAG, "response from url: " + jsonStr);
+                if (jsonStr != null) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(jsonStr);
+
+                        JSONArray stations = jsonObject.getJSONArray("stations");
+                        JSONArray prices = jsonObject.getJSONArray("prices");
+
+                        for (int countItem = 0; countItem < stations.length(); countItem++) {
+                            JSONObject item = stations.getJSONObject(countItem);
+
+                            String brand = item.getString("brand");
+                            int code = item.getInt("code");
+                            String name = item.getString("name");
+                            String address = item.getString("address");
+
+                            JSONObject location = item.getJSONObject("location");
+                            double latitude = location.getDouble("latitude");
+                            double longitude = location.getDouble("longitude");
+                            double distance = location.getDouble("distance");
+
+                            HashMap<String, String> station = new HashMap<>();
+                            station.put("brand", brand);
+                            station.put("code", Integer.toString(code));
+                            station.put("name", name);
+                            station.put("address", address);
+                            station.put("latitude", Double.toString(latitude));
+                            station.put("longitude", Double.toString(longitude));
+                            station.put("distance", Double.toString(distance));
+
+                            stationList.add(station);
+                        }
+
+                        for (int countItem = 0; countItem < prices.length(); countItem++) {
+                            JSONObject item = prices.getJSONObject(countItem);
+
+                            Double price = item.getDouble("price");
+                            String lastUpdated = item.getString("lastupdated");
+
+                            HashMap<String, String> priceItem = new HashMap<>();
+                            priceItem.put("price", Double.toString(price));
+                            priceItem.put("lastUpdated", lastUpdated);
+
+                            stationList.add(priceItem);
+                        }
+                    } catch (final JSONException e) {
+                        Log.e(TAG, "Json parsing error: " + e.getMessage());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(),
+                                        "Json parsing error: " + e.getMessage(),
+                                        Toast.LENGTH_LONG)
+                                        .show();
+                            }
+                        });
+
+                    }
+                } else {
+                    Log.e(TAG, "Couldn't get json from server.");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(),
+                                    "Couldn't get json from server. Check LogCat for possible errors!",
+                                    Toast.LENGTH_LONG)
+                                    .show();
+                        }
+                    });
+                }
+            }
             return null;
         }
 
@@ -214,12 +319,25 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
             if(pDialog.isShowing()) {
                 pDialog.dismiss();
             }
+            double latitude = 0;
+            double longitude = 0;
+            for(int stationCount = 1; stationCount < stationList.size(); stationCount++) {
+                if((stationList.get(stationCount).get("latitude")) != null) {
+                    latitude = Double.parseDouble(stationList.get(stationCount).get("latitude"));
+                }
+                if((stationList.get(stationCount).get("longitude") != null)) {
+                    longitude = Double.parseDouble(stationList.get(stationCount).get("longitude"));
+                }
+
+                mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(stationList.get(stationCount).get(("name"))));
+
+            }
         }
     }
 
     private class getAuthOCode extends AsyncTask<Void, Void, Void> {
         @Override
-        protected  void onPreExecute() {
+        protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(FuelMapActivity.this);
             pDialog.setMessage("Get Authorization Code...");
@@ -228,12 +346,12 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         }
 
         @Override
-        protected Void doInBackground(Void...arg0) {
+        protected Void doInBackground(Void... arg0) {
             HttpHandler httpHdlr = new HttpHandler();
             String urlAuthCode = "https://api.onegov.nsw.gov.au/oauth/client_credential/accesstoken?grant_type=client_credentials";
             String jsonStr = httpHdlr.getAuthServiceCall(urlAuthCode, "GET", authHeaders, null);
             Log.e(TAG, "response from url: " + jsonStr);
-            if(jsonStr != null) {
+            if (jsonStr != null) {
                 try {
                     JSONObject authList = new JSONObject(jsonStr);
                     authCode = authList.getString("access_token");
@@ -268,12 +386,21 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            if(pDialog.isShowing()) {
+            if (pDialog.isShowing()) {
                 pDialog.dismiss();
             }
+            Log.e(TAG, "AuthCode = " + authCode);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getApplicationContext(),
+                            "AuthCode = " + authCode,
+                            Toast.LENGTH_LONG)
+                            .show();
+                }
+            });
         }
     }
-
 }
 
 
