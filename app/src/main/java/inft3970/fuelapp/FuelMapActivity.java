@@ -1,7 +1,9 @@
 package inft3970.fuelapp;
 
 import android.Manifest;
+import android.app.Application;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -62,7 +64,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
 
     private static String authCode;
     private LatLng center;
-    private static String[] authHeaders;
+    private String[] authHeaders;
     private static String[][] headers;
     private static String body;
     private String fuelAPIKey;
@@ -75,6 +77,8 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        App.setContext(this);
+
         if(savedInstanceState != null) {
             mLastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
             mCameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
@@ -86,7 +90,8 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         fuelAPIKey = getString(R.string.fuel_api_key);
         authHeaders = new String[]{"Authorization", getResources().getString(R.string.fuel_api_base64)};
 
-        new getAuthOCode().execute();
+        AuthCodeCall codeCall = new AuthCodeCall();
+        authCode = codeCall.getAuthCode(authHeaders);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -143,8 +148,18 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                         "    \"sortby\": \"price\"," +
                         "    \"sortascending\":\"true\"" +
                         "}";
-                if(authCode != null) {
-                    new getFuelStationsRadius().execute();
+                StationByRadiusCall StationRadiusCall = new StationByRadiusCall();
+                stationList = StationRadiusCall.getStationsByRadius(headers, body);
+                Double latitude = 0.0;
+                Double longitude = 0.0;
+                for(int stationCount = 0;stationCount < stationList.size();stationCount++) {
+                    if(stationList.get(stationCount).get("latitude") != null) {
+                        latitude = Double.parseDouble(stationList.get(stationCount).get("latitude"));
+                    }
+                    if(stationList.get(stationCount).get("longitude") != null) {
+                        longitude = Double.parseDouble(stationList.get(stationCount).get("longitude"));
+                    }
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)));
                 }
             }
         });
@@ -222,185 +237,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         }
         return allStations;
     }
-    private class getFuelStationsRadius extends AsyncTask<Void, Void, Void> {
 
-        @Override
-        protected  void onPreExecute() {
-            super.onPreExecute();
-            pDialog = new ProgressDialog(FuelMapActivity.this);
-            pDialog.setMessage("Displaying Pins...");
-            pDialog.setCancelable(false);
-            pDialog.show();
-        }
-
-        @Override
-        protected Void doInBackground(Void...arg0) {
-            if(authCode != null) {
-                HttpHandler httpHdlr = new HttpHandler();
-                String urlRadius = "https://api.onegov.nsw.gov.au/FuelPriceCheck/v1/fuel/prices/nearby";
-                String jsonStr = httpHdlr.getServiceCall(urlRadius, "POST", headers, body);
-                Log.e(TAG, "response from url: " + jsonStr);
-                if (jsonStr != null) {
-                    try {
-                        JSONObject jsonObject = new JSONObject(jsonStr);
-
-                        JSONArray stations = jsonObject.getJSONArray("stations");
-                        JSONArray prices = jsonObject.getJSONArray("prices");
-
-                        for (int countItem = 0; countItem < stations.length(); countItem++) {
-                            JSONObject item = stations.getJSONObject(countItem);
-
-                            String brand = item.getString("brand");
-                            int code = item.getInt("code");
-                            String name = item.getString("name");
-                            String address = item.getString("address");
-
-                            JSONObject location = item.getJSONObject("location");
-                            double latitude = location.getDouble("latitude");
-                            double longitude = location.getDouble("longitude");
-                            double distance = location.getDouble("distance");
-
-                            HashMap<String, String> station = new HashMap<>();
-                            station.put("brand", brand);
-                            station.put("code", Integer.toString(code));
-                            station.put("name", name);
-                            station.put("address", address);
-                            station.put("latitude", Double.toString(latitude));
-                            station.put("longitude", Double.toString(longitude));
-                            station.put("distance", Double.toString(distance));
-
-                            stationList.add(station);
-                        }
-
-                        for (int countItem = 0; countItem < prices.length(); countItem++) {
-                            JSONObject item = prices.getJSONObject(countItem);
-
-                            Double price = item.getDouble("price");
-                            String lastUpdated = item.getString("lastupdated");
-
-                            HashMap<String, String> priceItem = new HashMap<>();
-                            priceItem.put("price", Double.toString(price));
-                            priceItem.put("lastUpdated", lastUpdated);
-
-                            stationList.add(priceItem);
-                        }
-                    } catch (final JSONException e) {
-                        Log.e(TAG, "Json parsing error: " + e.getMessage());
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(getApplicationContext(),
-                                        "Json parsing error: " + e.getMessage(),
-                                        Toast.LENGTH_LONG)
-                                        .show();
-                            }
-                        });
-
-                    }
-                } else {
-                    Log.e(TAG, "Couldn't get json from server.");
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(),
-                                    "Couldn't get json from server. Check LogCat for possible errors!",
-                                    Toast.LENGTH_LONG)
-                                    .show();
-                        }
-                    });
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            if(pDialog.isShowing()) {
-                pDialog.dismiss();
-            }
-            double latitude = 0;
-            double longitude = 0;
-            for(int stationCount = 1; stationCount < stationList.size(); stationCount++) {
-                if((stationList.get(stationCount).get("latitude")) != null) {
-                    latitude = Double.parseDouble(stationList.get(stationCount).get("latitude"));
-                }
-                if((stationList.get(stationCount).get("longitude") != null)) {
-                    longitude = Double.parseDouble(stationList.get(stationCount).get("longitude"));
-                }
-
-                mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(stationList.get(stationCount).get(("name"))));
-
-            }
-        }
-    }
-
-    private class getAuthOCode extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pDialog = new ProgressDialog(FuelMapActivity.this);
-            pDialog.setMessage("Get Authorization Code...");
-            pDialog.setCancelable(false);
-            pDialog.show();
-        }
-
-        @Override
-        protected Void doInBackground(Void... arg0) {
-            HttpHandler httpHdlr = new HttpHandler();
-            String urlAuthCode = "https://api.onegov.nsw.gov.au/oauth/client_credential/accesstoken?grant_type=client_credentials";
-            String jsonStr = httpHdlr.getAuthServiceCall(urlAuthCode, "GET", authHeaders, null);
-            Log.e(TAG, "response from url: " + jsonStr);
-            if (jsonStr != null) {
-                try {
-                    JSONObject authList = new JSONObject(jsonStr);
-                    authCode = authList.getString("access_token");
-                } catch (final JSONException e) {
-                    Log.e(TAG, "Json parsing error: " + e.getMessage());
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(),
-                                    "Json parsing error: " + e.getMessage(),
-                                    Toast.LENGTH_LONG)
-                                    .show();
-                        }
-                    });
-
-                }
-            } else {
-                Log.e(TAG, "Couldn't get json from server.");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(),
-                                "Couldn't get json from server. Check LogCat for possible errors!",
-                                Toast.LENGTH_LONG)
-                                .show();
-                    }
-                });
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            if (pDialog.isShowing()) {
-                pDialog.dismiss();
-            }
-            Log.e(TAG, "AuthCode = " + authCode);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(getApplicationContext(),
-                            "AuthCode = " + authCode,
-                            Toast.LENGTH_LONG)
-                            .show();
-                }
-            });
-        }
-    }
 }
 
 
