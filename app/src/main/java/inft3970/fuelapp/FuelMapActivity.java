@@ -22,6 +22,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraIdleListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -29,6 +31,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.maps.model.Marker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -72,6 +75,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
 
     ArrayList<HashMap<String, String>> stationList;
     String[] stationType = new String[]{"7-Eleven","BP", "Budget","Caltex","Caltex Woolworths","Coles Express","Costco","Enhance","Independent","Liberty","Lowes","Matilda","Metro Fuel","Mobil","Prime Petroleum","Puma Energy","Shell","Speedway","Tesla","United","Westside"};
+    private String brand;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,7 +141,9 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                 stationList = new ArrayList<HashMap<String, String>>();
                 Date time = new Date();
                 String timeString = dateFormat.format(time);
-                headers = new String[][]{{"apikey", fuelAPIKey}, {"transactionid", Integer.toString(transactionId++)}, {"requesttimestamp", timeString}, {"Content-Type", "application/json; charset=utf-8"}, {"Authorization", "Bearer "+authCode}};
+                String stationBrand;
+                String stationIcon;
+                headers = new String[][]{{"apikey", fuelAPIKey}, {"transactionid", Integer.toString(transactionId++)}, {"requesttimestamp", timeString}, {"Content-Type", "application/json; charset=utf-8"}, {"Authorization", "Bearer " + authCode}};
                 body = "{" +
                         "    \"fueltype\":\"P95\"," +
                         "    \"brand\":[" + getAllStations() + "]," +
@@ -152,17 +158,100 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                 stationList = StationRadiusCall.getStationsByRadius(headers, body);
                 Double latitude = 0.0;
                 Double longitude = 0.0;
-                for(int stationCount = 0;stationCount < stationList.size();stationCount++) {
-                    if(stationList.get(stationCount).get("latitude") != null) {
+                for (int stationCount = 0; stationCount < stationList.size(); stationCount++) {
+                    if (stationList.get(stationCount).get("latitude") != null) {
                         latitude = Double.parseDouble(stationList.get(stationCount).get("latitude"));
                     }
-                    if(stationList.get(stationCount).get("longitude") != null) {
+                    if (stationList.get(stationCount).get("longitude") != null) {
                         longitude = Double.parseDouble(stationList.get(stationCount).get("longitude"));
                     }
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)));
+                    stationBrand = stationList.get(stationCount).get("brand");
+
+                    //This if statement is required. It seems the data being read sometimes is incomplete, causing errors otherwise
+                    if(stationBrand instanceof String)
+                    {
+                        stationIcon = getIconString(stationBrand);
+                        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(stationBrand).icon(BitmapDescriptorFactory.fromAsset(stationIcon)));
+                    }
                 }
             }
-        });
+        } );
+    }
+
+    /*
+    This method takes in the string of the petrol station brand name
+    and returns a string containing the relevant image filename, contained
+    in the Assets folder.
+     */
+    public String getIconString(String brand) {
+        String iconFile;
+
+        switch (brand) {
+            case "7-Eleven":
+                iconFile = "711icon.png";
+                break;
+            case "BP":
+                iconFile = "bpIcon.png";
+                break;
+            case "Caltex":
+                iconFile = "caltexIcon.png";
+                break;
+            case "Caltex Woolworths":
+                iconFile = "woolworthsCaltex.png";
+                break;
+            case "Coles Express":
+                iconFile = "colesexpress.png";
+                break;
+            case "Costco":
+                iconFile = "costcoLogo.png";
+                break;
+            case "Enhance":
+                iconFile = "defaultLogo.png";
+                break;
+            case "Independent":
+                iconFile = "defaultLogo.png";
+                break;
+            case "Liberty":
+                iconFile = "liberty.png";
+                break;
+            case "Lowes":
+                iconFile = "lowes.png";
+                break;
+            case "Matilda":
+                iconFile = "matilda.png";
+                break;
+            case "Metro Fuel":
+                iconFile = "metro.png";
+                break;
+            case "Mobil":
+                iconFile = "mobil.png";
+                break;
+            case "Prime Petroleum":
+                iconFile = "defaultLogo.png";
+                break;
+            case "Puma Energy":
+                iconFile = "puma.png";
+                break;
+            case "Shell":
+                iconFile = "shell.png";
+                break;
+            case "Speedway":
+                iconFile = "speedway.png";
+                break;
+            case "Tesla":
+                iconFile = "tesla.png";
+                break;
+            case "United":
+                iconFile = "united.png";
+                break;
+            case "Westside":
+                iconFile = "westside.png";
+                break;
+            default:
+                iconFile = "defaultLogo.png";
+                break;
+        }
+        return iconFile;
     }
 
     private void getDeviceLocation() {
