@@ -181,7 +181,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
     /*
     This method takes in the string of the petrol station brand name
     and returns a string containing the relevant image filename, contained
-    in the Assets folder.
+    in the Assets folder
      */
     public String getIconString(String brand) {
         String iconFile;
