@@ -4,16 +4,19 @@ import android.Manifest;
 import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationServices;
@@ -101,6 +104,16 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        FloatingActionButton listViewBtn = (FloatingActionButton)findViewById(R.id.list_view_button);
+        listViewBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent listIntent = new Intent(getApplicationContext(), FuelListActivity.class);
+                listIntent.putExtra("station_list", stationList);
+                startActivity(listIntent);
+            }
+        });
     }
 
     @Override
@@ -168,7 +181,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                     stationBrand = stationList.get(stationCount).get("brand");
 
                     //This if statement is required. It seems the data being read sometimes is incomplete, causing errors otherwise
-                    if(stationBrand instanceof String)
+                    if(stationBrand != null)
                     {
                         stationIcon = getIconString(stationBrand);
                         mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(stationBrand).icon(BitmapDescriptorFactory.fromAsset(stationIcon)));
