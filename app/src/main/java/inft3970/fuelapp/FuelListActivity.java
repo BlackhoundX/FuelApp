@@ -24,7 +24,7 @@ public class FuelListActivity extends Activity {
         ArrayList<HashMap<String, String>> stationList = (ArrayList<HashMap<String, String>>) getIntent().getSerializableExtra("station_list");
 
         RecyclerView rv = (RecyclerView)findViewById(R.id.rv);
-        rv.setHasFixedSize(true);
+        rv.setHasFixedSize(false);
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
         rv.setLayoutManager(llm);

@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -26,10 +28,10 @@ public class AuthCodeCall {
     private String authCode;
     private String returnCode;
     private static String[] authHeaders;
-    public String getAuthCode(String[] authHeader) {
+    public String getAuthCode(String[] authHeader, ProgressBar progressBar) {
         authHeaders = authHeader;
         try {
-            returnCode = new getAuthOCode().execute().get();
+            returnCode = new getAuthOCode(progressBar).execute().get();
         } catch(ExecutionException | InterruptedException e) {
             Log.e(TAG, "Exception in AuthCodeCall: " + e.getMessage());
         }
@@ -38,13 +40,17 @@ public class AuthCodeCall {
 
     private class getAuthOCode extends AsyncTask<Void, Void, String> {
 
+        private ProgressBar progressBar;
+
+        public getAuthOCode(ProgressBar progressBar) {
+            this.progressBar = progressBar;
+        }
+
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = new ProgressDialog(context);
-            pDialog.setMessage("Get Authorization Code...");
-            pDialog.setCancelable(false);
-            pDialog.show();
+            progressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -88,21 +94,8 @@ public class AuthCodeCall {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            if (pDialog.isShowing()) {
-                pDialog.dismiss();
-            }
-            Log.e(TAG, "AuthCode = " + authCode);
-            fuelMap.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(context,
-                            "AuthCode = " + authCode,
-                            Toast.LENGTH_LONG)
-                            .show();
-                }
-            });
+            progressBar.setVisibility(View.GONE);
         }
-
     }
 
 }

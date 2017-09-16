@@ -17,6 +17,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationServices;
@@ -53,7 +54,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
     private static final String TAG = FuelMapActivity.class.getSimpleName();
     private GoogleMap mMap;
     private CameraPosition mCameraPosition;
-    private ProgressDialog pDialog;
+    public ProgressBar pBar;
 
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
@@ -68,17 +69,16 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
 
     private boolean mLocationPermissionGranted;
 
-    private static String authCode;
+    private String authCode;
     private LatLng center;
     private String[] authHeaders;
-    private static String[][] headers;
-    private static String body;
+    private String[][] headers;
+    private String body;
     private String fuelAPIKey;
     private int transactionId = 0;
 
     ArrayList<HashMap<String, String>> stationList;
     String[] stationType = new String[]{"7-Eleven","BP", "Budget","Caltex","Caltex Woolworths","Coles Express","Costco","Enhance","Independent","Liberty","Lowes","Matilda","Metro Fuel","Mobil","Prime Petroleum","Puma Energy","Shell","Speedway","Tesla","United","Westside"};
-    private String brand;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,19 +86,21 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
 
         App.setContext(this);
 
+
         if(savedInstanceState != null) {
             mLastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
             mCameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
         }
 
         setContentView(R.layout.activity_fuel_map);
+        pBar = (ProgressBar)findViewById(R.id.progressBar);
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         fuelAPIKey = getString(R.string.fuel_api_key);
         authHeaders = new String[]{"Authorization", getResources().getString(R.string.fuel_api_base64)};
 
         AuthCodeCall codeCall = new AuthCodeCall();
-        authCode = codeCall.getAuthCode(authHeaders);
+        authCode = codeCall.getAuthCode(authHeaders, pBar);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -168,7 +170,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                         "    \"sortascending\":\"true\"" +
                         "}";
                 StationByRadiusCall StationRadiusCall = new StationByRadiusCall();
-                stationList = StationRadiusCall.getStationsByRadius(headers, body);
+                stationList = StationRadiusCall.getStationsByRadius(headers, body, pBar);
                 Double latitude = 0.0;
                 Double longitude = 0.0;
                 for (int stationCount = 0; stationCount < stationList.size(); stationCount++) {

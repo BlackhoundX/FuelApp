@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -31,12 +33,12 @@ public class StationByRadiusCall {
     private static String body;
     private ArrayList returnStationList;
 
-    public ArrayList getStationsByRadius(String[][] stationHeaders, String body) {
+    public ArrayList getStationsByRadius(String[][] stationHeaders, String body, ProgressBar progressBar) {
         stationList = new ArrayList<>();
         headers = stationHeaders;
         StationByRadiusCall.body = body;
         try {
-            returnStationList = new getFuelStationsRadius().execute().get();
+            returnStationList = new getFuelStationsRadius(progressBar).execute().get();
         } catch(ExecutionException | InterruptedException e) {
             Log.e(TAG, "Exception in StationByRadiusCall " + e.getMessage());
         }
@@ -45,19 +47,17 @@ public class StationByRadiusCall {
 
     private class getFuelStationsRadius extends AsyncTask<Void, Void, ArrayList> {
 
+        private final ProgressBar progressBar;
+
+        public getFuelStationsRadius(final ProgressBar progressBar) {
+            this.progressBar = progressBar;
+        }
+
+
         @Override
         protected  void onPreExecute() {
             super.onPreExecute();
-            fuelMap.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(context,
-                            "Placing Pins",
-                            Toast.LENGTH_LONG)
-                            .show();
-                }
-            });
-
+            progressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -142,7 +142,7 @@ public class StationByRadiusCall {
         @Override
         protected void onPostExecute(ArrayList result) {
             super.onPostExecute(result);
-
+            progressBar.setVisibility(View.GONE);
             }
         }
 

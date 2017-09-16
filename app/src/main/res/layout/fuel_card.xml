@@ -24,11 +24,10 @@
 
         <TextView
             android:id="@+id/station_price_text"
-            android:layout_width="wrap_content"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="280dp"
-            android:layout_marginStart="280dp"
+            android:layout_gravity="center|right"
+            android:layout_margin="10dp"
             android:textSize="20sp" />
 
         <TextView

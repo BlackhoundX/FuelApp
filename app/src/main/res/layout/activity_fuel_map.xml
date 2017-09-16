@@ -20,15 +20,19 @@
         android:layout_height="56dp"
         android:clickable="true"
         android:scaleType="center"
-        android:layout_gravity="bottom"
-        android:layout_marginLeft="300dp"
-        android:layout_marginStart="300dp"
-        android:layout_marginBottom="20dp"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="10dp"
         app:backgroundTint="@color/colorPrimaryDark"
         app:fabSize="mini"
         app:srcCompat="@android:drawable/ic_menu_agenda" />
 
-
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_margin="10dp"/>
 
 
 </FrameLayout>

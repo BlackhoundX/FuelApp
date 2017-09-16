@@ -33,7 +33,8 @@
 
         <activity
             android:name=".FuelMapActivity"
-            android:label="@string/title_activity_fuel_map">
+            android:label="@string/title_activity_fuel_map"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -42,7 +43,8 @@
         </activity>
 
         <activity android:name=".FuelListActivity"
-            android:label="@string/title_activity_fuel_list">
+            android:label="@string/title_activity_fuel_list"
+            android:screenOrientation="portrait">
 
         </activity>
     </application>
