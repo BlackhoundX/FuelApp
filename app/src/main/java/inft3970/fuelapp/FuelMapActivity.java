@@ -6,9 +6,18 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -41,6 +50,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -149,6 +160,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         getDeviceLocation();
 
         mMap.setOnCameraIdleListener(new OnCameraIdleListener() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onCameraIdle() {
                 center = mMap.getCameraPosition().target;
@@ -173,6 +185,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                 stationList = StationRadiusCall.getStationsByRadius(headers, body, pBar);
                 Double latitude = 0.0;
                 Double longitude = 0.0;
+                String price = "N/A";
                 for (int stationCount = 0; stationCount < stationList.size(); stationCount++) {
                     if (stationList.get(stationCount).get("latitude") != null) {
                         latitude = Double.parseDouble(stationList.get(stationCount).get("latitude"));
@@ -180,13 +193,32 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                     if (stationList.get(stationCount).get("longitude") != null) {
                         longitude = Double.parseDouble(stationList.get(stationCount).get("longitude"));
                     }
-                    stationBrand = stationList.get(stationCount).get("brand");
-
+                    if(stationList.get(stationCount).get("price") != null) {
+                        price = stationList.get(stationCount).get("price");
+                    }
                     //This if statement is required. It seems the data being read sometimes is incomplete, causing errors otherwise
-                    if(stationBrand != null)
+                    if(stationList.get(stationCount).get("brand") != null)
                     {
+                        stationBrand = stationList.get(stationCount).get("brand");
                         stationIcon = getIconString(stationBrand);
-                        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(stationBrand).icon(BitmapDescriptorFactory.fromAsset(stationIcon)));
+                        Bitmap iconBitmap = null;
+                        try {
+                            InputStream str = getApplicationContext().getAssets().open(stationIcon);
+                            Bitmap unmutBitmap = BitmapFactory.decodeStream(str);
+                            Bitmap mutBitmap = unmutBitmap.copy(Bitmap.Config.ARGB_8888, true);
+                            iconBitmap = Bitmap.createBitmap(unmutBitmap.getWidth() + 30, (unmutBitmap.getHeight() + 50), Bitmap.Config.ARGB_8888);
+                            Canvas priceText = new Canvas(iconBitmap);
+                            Paint textStyle = new Paint();
+                            textStyle.setColor(Color.WHITE);
+                            textStyle.setTextAlign(Paint.Align.CENTER);
+                            textStyle.setTextSize(50f);
+                            priceText.drawRect(0, 0, 120, 50, new Paint(Color.BLACK));
+                            priceText.drawBitmap(mutBitmap, 15, 50, new Paint());
+                            priceText.drawText(price, 60f, 45f, textStyle);
+                        } catch (IOException e) {
+
+                        }
+                        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(price).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)));
                     }
                 }
             }

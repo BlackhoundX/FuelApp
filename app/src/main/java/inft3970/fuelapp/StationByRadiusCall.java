@@ -74,17 +74,22 @@ public class StationByRadiusCall {
                         JSONArray prices = jsonObject.getJSONArray("prices");
 
                         for (int countItem = 0; countItem < stations.length(); countItem++) {
-                            JSONObject item = stations.getJSONObject(countItem);
+                            JSONObject itemStation = stations.getJSONObject(countItem);
+                            JSONObject itemPrices = prices.getJSONObject(countItem);
 
-                            String brand = item.getString("brand");
-                            int code = item.getInt("code");
-                            String name = item.getString("name");
-                            String address = item.getString("address");
+                            String brand = itemStation.getString("brand");
+                            int code = itemStation.getInt("code");
+                            String name = itemStation.getString("name");
+                            String address = itemStation.getString("address");
 
-                            JSONObject location = item.getJSONObject("location");
+                            JSONObject location = itemStation.getJSONObject("location");
                             double latitude = location.getDouble("latitude");
                             double longitude = location.getDouble("longitude");
                             double distance = location.getDouble("distance");
+
+                            Double price = itemPrices.getDouble("price");
+                            String lastUpdated = itemPrices.getString("lastupdated");
+
 
                             HashMap<String, String> station = new HashMap<>();
                             station.put("brand", brand);
@@ -94,22 +99,12 @@ public class StationByRadiusCall {
                             station.put("latitude", Double.toString(latitude));
                             station.put("longitude", Double.toString(longitude));
                             station.put("distance", Double.toString(distance));
+                            station.put("price", Double.toString(price));
+                            station.put("lastUpdated", lastUpdated);
 
                             stationList.add(station);
                         }
 
-                        for (int countItem = 0; countItem < prices.length(); countItem++) {
-                            JSONObject item = prices.getJSONObject(countItem);
-
-                            Double price = item.getDouble("price");
-                            String lastUpdated = item.getString("lastupdated");
-
-                            HashMap<String, String> priceItem = new HashMap<>();
-                            priceItem.put("price", Double.toString(price));
-                            priceItem.put("lastUpdated", lastUpdated);
-
-                            stationList.add(priceItem);
-                        }
                     } catch (final JSONException e) {
                         Log.e(TAG, "Json parsing error: " + e.getMessage());
                         fuelMap.runOnUiThread(new Runnable() {
