@@ -206,15 +206,15 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                             InputStream str = getApplicationContext().getAssets().open(stationIcon);
                             Bitmap unmutBitmap = BitmapFactory.decodeStream(str);
                             Bitmap mutBitmap = unmutBitmap.copy(Bitmap.Config.ARGB_8888, true);
-                            iconBitmap = Bitmap.createBitmap(unmutBitmap.getWidth() + 30, (unmutBitmap.getHeight() + 50), Bitmap.Config.ARGB_8888);
+                            iconBitmap = Bitmap.createBitmap(unmutBitmap.getWidth() + 60, (unmutBitmap.getHeight() + 50), Bitmap.Config.ARGB_8888);
                             Canvas priceText = new Canvas(iconBitmap);
                             Paint textStyle = new Paint();
                             textStyle.setColor(Color.WHITE);
                             textStyle.setTextAlign(Paint.Align.CENTER);
                             textStyle.setTextSize(50f);
-                            priceText.drawRect(0, 0, 120, 50, new Paint(Color.BLACK));
-                            priceText.drawBitmap(mutBitmap, 15, 50, new Paint());
-                            priceText.drawText(price, 60f, 45f, textStyle);
+                            priceText.drawRect(0, 0, 150, 50, new Paint(Color.BLACK));
+                            priceText.drawBitmap(mutBitmap, 25, 50, new Paint());
+                            priceText.drawText(price, 75f, 45f, textStyle);
                         } catch (IOException e) {
 
                         }

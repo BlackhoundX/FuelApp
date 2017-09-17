@@ -75,7 +75,7 @@ public class StationByRadiusCall {
 
                         for (int countItem = 0; countItem < stations.length(); countItem++) {
                             JSONObject itemStation = stations.getJSONObject(countItem);
-                            JSONObject itemPrices = prices.getJSONObject(countItem);
+
 
                             String brand = itemStation.getString("brand");
                             int code = itemStation.getInt("code");
@@ -87,8 +87,16 @@ public class StationByRadiusCall {
                             double longitude = location.getDouble("longitude");
                             double distance = location.getDouble("distance");
 
-                            Double price = itemPrices.getDouble("price");
-                            String lastUpdated = itemPrices.getString("lastupdated");
+                            Double price = 0.0;
+                            String lastUpdated = null;
+                            for(int countPrice = 0; countPrice < prices.length(); countPrice++) {
+                                JSONObject itemPrices = prices.getJSONObject(countPrice);
+                                if(itemPrices.getInt("stationcode") == itemStation.getInt("code")) {
+                                    price = itemPrices.getDouble("price");
+                                    lastUpdated = itemPrices.getString("lastupdated");
+                                }
+                            }
+
 
 
                             HashMap<String, String> station = new HashMap<>();
