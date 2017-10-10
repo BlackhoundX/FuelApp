@@ -18,13 +18,13 @@
         android:id="@+id/list_view_button"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:clickable="true"
-        android:scaleType="center"
         android:layout_gravity="bottom|right"
         android:layout_margin="10dp"
+        android:clickable="true"
+        android:scaleType="center"
         app:backgroundTint="@color/colorPrimaryDark"
         app:fabSize="mini"
-        app:srcCompat="@android:drawable/ic_menu_agenda" />
+        app:srcCompat="@drawable/list" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -33,6 +33,17 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_margin="10dp"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/filter_button"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom|center"
+        android:layout_margin="10dp"
+        android:clickable="true"
+        app:backgroundTint="@color/colorPrimaryDark"
+        app:fabSize="mini"
+        app:srcCompat="@drawable/filter_icon" />
 
 
 </FrameLayout>

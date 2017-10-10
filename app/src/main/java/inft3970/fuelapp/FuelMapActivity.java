@@ -50,6 +50,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
@@ -72,6 +73,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
     private final LatLng DEFAULT_LOCATION = new LatLng(-32.8927673,151.7019888);
     private static final int DEFAULT_ZOOM = 15;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private final String DEFAULT_FUEL_CODE = "E10";
     private Location mLastKnownLocation;
     private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a", Locale.ENGLISH);
 
@@ -96,7 +98,6 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         super.onCreate(savedInstanceState);
 
         App.setContext(this);
-
 
         if(savedInstanceState != null) {
             mLastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
@@ -127,6 +128,15 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                 startActivity(listIntent);
             }
         });
+
+        FloatingActionButton filterBtn = (FloatingActionButton)findViewById(R.id.filter_button);
+        filterBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent filterIntent = new Intent(getApplicationContext(), FuelFilterActivity.class);
+                startActivity(filterIntent);
+            }
+        });
     }
 
     @Override
@@ -153,8 +163,8 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
 
         LatLngBounds NSW = new LatLngBounds(new LatLng(-34, 141), new LatLng(-28, 154));
         mMap.setLatLngBoundsForCameraTarget(NSW);
-        mMap.setMinZoomPreference(5.5f);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(NSW.getCenter(), 5.5f));
+        mMap.setMinZoomPreference(6.5f);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(NSW.getCenter(), 6.5f));
         getLocationPermission();
         updateLocationUI();
         getDeviceLocation();
@@ -170,10 +180,12 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                 String timeString = dateFormat.format(time);
                 String stationBrand;
                 String stationIcon;
+                ArrayList<String> stationSettings = new ArrayList<String>();
+                stationSettings = getSettings();
                 headers = new String[][]{{"apikey", fuelAPIKey}, {"transactionid", Integer.toString(transactionId++)}, {"requesttimestamp", timeString}, {"Content-Type", "application/json; charset=utf-8"}, {"Authorization", "Bearer " + authCode}};
                 body = "{" +
-                        "    \"fueltype\":\"P95\"," +
-                        "    \"brand\":[" + getAllStations() + "]," +
+                        "    \"fueltype\":\"" + stationSettings.get(0) + "\"," +
+                        "    \"brand\":[" + stationSettings.get(1) + "]," +
                         "    \"namedlocation\":\"location\"," +
                         "    \"latitude\":\"" + Double.toString(center.latitude) + "\"," +
                         "    \"longitude\":\"" + Double.toString(center.longitude) + "\"," +
@@ -216,7 +228,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                             priceText.drawBitmap(mutBitmap, 25, 50, new Paint());
                             priceText.drawText(price, 75f, 45f, textStyle);
                         } catch (IOException e) {
-
+                            Log.e(TAG, e.getMessage());
                         }
                         mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(price).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)));
                     }
@@ -374,6 +386,26 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         return allStations;
     }
 
+    private ArrayList<String> getSettings() {
+        File settingsFile = new File(this.getFilesDir() + "/Settings.xml");
+        ArrayList<String> settingsList = new ArrayList<>();
+        if(settingsFile.exists()) {
+            XmlSettings xmlSettings = new XmlSettings();
+            settingsList = xmlSettings.readXml();
+            String[] fuelBrands = settingsList.get(1).split(", ");
+            String brandString = "";
+            for(String brand:fuelBrands) {
+                brandString += "\"" + brand + "\",";
+            }
+            brandString = brandString.substring(0, brandString.lastIndexOf(","));
+            settingsList.remove(1);
+            settingsList.add(1, brandString);
+        } else {
+            settingsList.add(DEFAULT_FUEL_CODE);
+            settingsList.add(getAllStations());
+        }
+        return settingsList;
+    }
 }
 
 

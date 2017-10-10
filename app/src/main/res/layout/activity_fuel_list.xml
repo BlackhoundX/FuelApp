@@ -19,7 +19,7 @@
         android:clickable="true"
         app:backgroundTint="@color/colorPrimaryDark"
         app:fabSize="mini"
-        app:srcCompat="@android:drawable/ic_menu_mapmode" />
+        app:srcCompat="@drawable/map_with_placeholder" />
 
 
 </FrameLayout>

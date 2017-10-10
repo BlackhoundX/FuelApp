@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="brands">
+        <item>All</item>
+        <item>7-Eleven</item>
+        <item>BP</item>
+        <item>Budget</item>
+        <item>Caltex</item>
+        <item>Caltex Woolworths</item>
+        <item>Coles Express</item>
+        <item>Costco</item>
+        <item>Enhance</item>
+        <item>Independent</item>
+        <item>Liberty</item>
+        <item>Lowes</item>
+        <item>Matilda</item>
+        <item>Metro Fuel</item>
+        <item>Mobil</item>
+        <item>Prime Petroleum</item>
+        <item>Puma Energy</item>
+        <item>Shell</item>
+        <item>Speedway</item>
+        <item>Tesla</item>
+        <item>United</item>
+        <item>Westside</item>
+    </string-array>
+    <string-array name="fuel_codes">
+        <item>E10</item>
+        <item>U91</item>
+        <item>E85</item>
+        <item>P95</item>
+        <item>P98</item>
+        <item>DL</item>
+        <item>PDL</item>
+        <item>B20</item>
+        <item>LPG</item>
+        <item>CNG</item>
+        <item>LNG</item>
+        <item>EV</item>
+        <item>H2</item>
+    </string-array>
+    <string-array name="fuel_names">
+        <item>Ethanol 94</item>
+        <item>Unleaded 91</item>
+        <item>Ethanol 105</item>
+        <item>Premium 95</item>
+        <item>Premium 98</item>
+        <item>Diesel</item>
+        <item>Premium Diesel</item>
+        <item>Biodiesel 20</item>
+        <item>LPG</item>
+        <item>CNG/NGV</item>
+        <item>LNG</item>
+        <item>EV Charge</item>
+        <item>Hydrogen</item>
+    </string-array>
+</resources>

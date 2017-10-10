@@ -20,8 +20,17 @@ import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Time;
+import java.text.DateFormat;
+import java.text.FieldPosition;
+import java.text.ParseException;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by shane on 15/09/2017.
@@ -53,6 +62,8 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.StationViewHolder>
         TextView stationName;
         TextView stationAddress;
         TextView price;
+        TextView stationLastUpdated;
+        TextView stationKmFromPoint;
         ImageView stationIcon;
 
 
@@ -63,6 +74,8 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.StationViewHolder>
             stationName = (TextView)itemView.findViewById(R.id.station_title_text);
             stationAddress = (TextView)itemView.findViewById(R.id.station_address_text);
             price = (TextView)itemView.findViewById(R.id.station_price_text);
+            stationLastUpdated = (TextView)itemView.findViewById(R.id.station_last_updated_text);
+            stationKmFromPoint = (TextView)itemView.findViewById(R.id.station_km_from_point_text);
             stationIcon = (ImageView)itemView.findViewById(R.id.station_icon_img);
         }
     }
@@ -77,6 +90,13 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.StationViewHolder>
         }
         if(stationList.get(i).get("price") != null) {
             stationViewHolder.price.setText(stationList.get(i).get("price"));
+        }
+        if(stationList.get(i).get("lastUpdated") != null) {
+            stationViewHolder.stationLastUpdated.setText(getFormattedLastUpdated(stationList.get(i).get("lastUpdated")));
+        }
+        if(stationList.get(i).get("distance") != null) {
+            String distanceText = stationList.get(i).get("distance") + " Km Away";
+            stationViewHolder.stationKmFromPoint.setText(distanceText);
         }
         if(stationList.get(i).get("brand") != null) {
             try {
@@ -167,5 +187,43 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.StationViewHolder>
                 break;
         }
         return iconFile;
+    }
+
+    private String getFormattedLastUpdated(String lastUpdated) {
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+        Date lastUpdatedDate = null;
+        Date currentDate = null;
+        String currentDateString = format.format(new Date());
+        String lastUpdatedString = "Last Updated: ";
+        try {
+            lastUpdatedDate = format.parse(lastUpdated);
+            currentDate = format.parse(currentDateString);
+        } catch(ParseException e) {
+            Log.e(TAG, e.getMessage());
+        }
+        long timeDiff = Math.abs(currentDate.getTime() - lastUpdatedDate.getTime());
+        long diffDays = TimeUnit.MILLISECONDS.toDays(timeDiff);
+        long diffHours = TimeUnit.MILLISECONDS.toHours(timeDiff) - TimeUnit.DAYS.toHours(diffDays);
+        long diffMinutes = TimeUnit.MILLISECONDS.toMinutes(timeDiff) - TimeUnit.HOURS.toMinutes(diffHours);
+        long diffSeconds = TimeUnit.MILLISECONDS.toSeconds(timeDiff) - TimeUnit.MINUTES.toSeconds(diffMinutes);
+
+        if(diffDays > 1) {
+            lastUpdatedString += diffDays + " Days Ago";
+        } else if(diffDays == 1) {
+            lastUpdatedString += "1 Day Ago";
+        } else if(diffHours > 1) {
+            lastUpdatedString += diffHours + " Hours Ago";
+        } else if(diffHours == 1) {
+            lastUpdatedString += "1 Hour Ago";
+        } else if(diffMinutes > 1) {
+            lastUpdatedString += diffMinutes + " Minutes Ago";
+        } else if(diffMinutes == 1) {
+            lastUpdatedString += "1 Minute Ago";
+        } else if(diffSeconds > 1) {
+            lastUpdatedString += diffSeconds + " Seconds Ago";
+        } else if(diffSeconds == 1) {
+            lastUpdatedString += "1 Second Ago";
+        }
+    return lastUpdatedString;
     }
 }
