@@ -1,9 +1,6 @@
 package inft3970.fuelapp;
 
 import android.Manifest;
-import android.app.Application;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -11,44 +8,41 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.GeoDataClient;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceDetectionClient;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraIdleListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.maps.model.Marker;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,7 +50,6 @@ import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -69,6 +62,8 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
     public ProgressBar pBar;
 
     private FusedLocationProviderClient mFusedLocationProviderClient;
+    private GeoDataClient mGeoDataClient;
+    private PlaceDetectionClient mPlaceDetectionClient;
 
     private final LatLng DEFAULT_LOCATION = new LatLng(-32.8927673,151.7019888);
     private static final int DEFAULT_ZOOM = 15;
@@ -89,6 +84,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
     private String body;
     private String fuelAPIKey;
     private int transactionId = 0;
+    private LatLngBounds NSW = new LatLngBounds(new LatLng(-34, 141), new LatLng(-28, 154));
 
     ArrayList<HashMap<String, String>> stationList;
     String[] stationType = new String[]{"7-Eleven","BP", "Budget","Caltex","Caltex Woolworths","Coles Express","Costco","Enhance","Independent","Liberty","Lowes","Matilda","Metro Fuel","Mobil","Prime Petroleum","Puma Energy","Shell","Speedway","Tesla","United","Westside"};
@@ -106,8 +102,11 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
 
         setContentView(R.layout.activity_fuel_map);
         pBar = (ProgressBar)findViewById(R.id.progressBar);
+        final CardView searchCardView = (CardView)findViewById(R.id.search_card_view);
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        mGeoDataClient = Places.getGeoDataClient(this, null);
+        mPlaceDetectionClient = Places.getPlaceDetectionClient(this, null);
         fuelAPIKey = getString(R.string.fuel_api_key);
         authHeaders = new String[]{"Authorization", getResources().getString(R.string.fuel_api_base64)};
 
@@ -118,6 +117,22 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)getFragmentManager().findFragmentById(R.id.search_fragment);
+        autocompleteFragment.setBoundsBias(NSW);
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                LatLng placeLatLng = place.getLatLng();
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(placeLatLng));
+                searchCardView.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onError(Status status) {
+
+            }
+        });
+
 
         FloatingActionButton listViewBtn = (FloatingActionButton)findViewById(R.id.list_view_button);
         listViewBtn.setOnClickListener(new View.OnClickListener() {
@@ -135,6 +150,14 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
             public void onClick(View v) {
                 Intent filterIntent = new Intent(getApplicationContext(), FuelFilterActivity.class);
                 startActivity(filterIntent);
+            }
+        });
+
+        FloatingActionButton searchBtn = (FloatingActionButton)findViewById(R.id.search_button);
+        searchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchCardView.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -161,10 +184,11 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        LatLngBounds NSW = new LatLngBounds(new LatLng(-34, 141), new LatLng(-28, 154));
+
         mMap.setLatLngBoundsForCameraTarget(NSW);
         mMap.setMinZoomPreference(6.5f);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(NSW.getCenter(), 6.5f));
+        mMap.getUiSettings().setMapToolbarEnabled(false);
         getLocationPermission();
         updateLocationUI();
         getDeviceLocation();
