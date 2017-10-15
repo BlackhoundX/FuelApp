@@ -70,5 +70,18 @@
         app:fabSize="mini"
         app:srcCompat="@drawable/places_ic_search" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fuel_tracking_button"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:clickable="true"
+        android:layout_gravity="bottom|right"
+        app:backgroundTint="@color/colorPrimaryDark"
+        android:layout_marginBottom="80dp"
+        android:layout_marginRight="10dp"
+        app:elevation="0dp"
+        app:fabSize="mini"
+        app:srcCompat="@android:drawable/ic_input_get" />
+
 
 </FrameLayout>
