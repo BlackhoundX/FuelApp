@@ -22,10 +22,6 @@ import java.util.Arrays;
 public class HttpHandler {
     private static final String TAG = HttpHandler.class.getSimpleName();
 
-    public HttpHandler() {
-
-    }
-
     public String getServiceCall(String reqUrl, String conType, String[][] headers, String body) {
         String response = null;
         try {

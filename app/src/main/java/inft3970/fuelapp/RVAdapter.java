@@ -100,7 +100,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.StationViewHolder>
         }
         if(stationList.get(i).get("brand") != null) {
             try {
-                String icon = getIconString(stationList.get(i).get("brand"));
+                String icon = IconStringCall.getIconString(stationList.get(i).get("brand"));
                 AssetManager mg = App.getContext().getAssets();
                 InputStream ims = mg.open(icon);
                 Drawable draw = Drawable.createFromStream(ims, null);
@@ -115,78 +115,6 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.StationViewHolder>
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
-    }
-
-
-    public String getIconString(String brand) {
-        String iconFile;
-
-        switch (brand) {
-            case "7-Eleven":
-                iconFile = "711icon.png";
-                break;
-            case "BP":
-                iconFile = "bpIcon.png";
-                break;
-            case "Caltex":
-                iconFile = "caltexIcon.png";
-                break;
-            case "Caltex Woolworths":
-                iconFile = "woolworthsCaltex.png";
-                break;
-            case "Coles Express":
-                iconFile = "colesexpress.png";
-                break;
-            case "Costco":
-                iconFile = "costcoLogo.png";
-                break;
-            case "Enhance":
-                iconFile = "defaultLogo.png";
-                break;
-            case "Independent":
-                iconFile = "defaultLogo.png";
-                break;
-            case "Liberty":
-                iconFile = "liberty.png";
-                break;
-            case "Lowes":
-                iconFile = "lowes.png";
-                break;
-            case "Matilda":
-                iconFile = "matilda.png";
-                break;
-            case "Metro Fuel":
-                iconFile = "metro.png";
-                break;
-            case "Mobil":
-                iconFile = "mobil.png";
-                break;
-            case "Prime Petroleum":
-                iconFile = "defaultLogo.png";
-                break;
-            case "Puma Energy":
-                iconFile = "puma.png";
-                break;
-            case "Shell":
-                iconFile = "shell.png";
-                break;
-            case "Speedway":
-                iconFile = "speedway.png";
-                break;
-            case "Tesla":
-                iconFile = "tesla.png";
-                break;
-            case "United":
-                iconFile = "united.png";
-                break;
-            case "Westside":
-                iconFile = "westside.png";
-                break;
-            default:
-                iconFile = "defaultLogo.png";
-                break;
-        }
-        return iconFile;
     }
 
     private String getFormattedLastUpdated(String lastUpdated) {
