@@ -58,6 +58,11 @@
         <activity android:name=".FuelFilterActivity"
             android:label="Filter"
             android:screenOrientation="portrait"/>
+
+        <activity android:name=".FuelAnalyticsActivity"
+            android:label="Filter"
+            android:screenOrientation="portrait"/>
+
     </application>
 
 </manifest>
