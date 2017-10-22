@@ -83,5 +83,21 @@
         app:fabSize="mini"
         app:srcCompat="@android:drawable/ic_input_get" />
 
+    <android.support.v7.widget.CardView
+        android:layout_width="100dp"
+        android:layout_height="20dp"
+        android:layout_gravity="center|top"
+        android:layout_margin="10dp">
+
+
+        <TextView
+            android:id="@+id/fuel_name_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="16sp"
+            android:text="TextView" />
+    </android.support.v7.widget.CardView>
+
 
 </FrameLayout>

@@ -50,6 +50,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -70,6 +71,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
     public GoogleMap mMap;
     public CameraPosition mCameraPosition;
     public ProgressBar pBar;
+    public TextView fuelNameText;
 
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private GeoDataClient mGeoDataClient;
@@ -118,6 +120,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         setContentView(R.layout.activity_fuel_map);
         pBar = (ProgressBar)findViewById(R.id.progressBar);
         final CardView searchCardView = (CardView)findViewById(R.id.search_card_view);
+        fuelNameText = (TextView)findViewById(R.id.fuel_name_text);
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         mGeoDataClient = Places.getGeoDataClient(this, null);
@@ -273,6 +276,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                 String stationIcon;
                 ArrayList<String> stationSettings = new ArrayList<String>();
                 stationSettings = getSettings();
+                fuelNameText.setText(stationSettings.get(0));
                 headers = new String[][]{{"apikey", fuelAPIKey}, {"transactionid", Integer.toString(transactionId++)}, {"requesttimestamp", timeString}, {"Content-Type", "application/json; charset=utf-8"}, {"Authorization", "Bearer " + authCode}};
                 body = "{" +
                         "    \"fueltype\":\"" + stationSettings.get(0) + "\"," +
@@ -290,6 +294,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                 Double longitude = 0.0;
                 String price = "N/A";
                 String fuelType = stationSettings.get(0);
+                String stationCode;
                 for (int stationCount = 0; stationCount < stationList.size(); stationCount++) {
                     if (stationList.get(stationCount).get("latitude") != null) {
                         latitude = Double.parseDouble(stationList.get(stationCount).get("latitude"));
@@ -301,10 +306,11 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                         price = stationList.get(stationCount).get("price");
                     }
                     //This if statement is required. It seems the data being read sometimes is incomplete, causing errors otherwise
-                    if(stationList.get(stationCount).get("brand") != null)
+                    if(stationList.get(stationCount).get("brand") != null && stationList.get(stationCount).get("code") != null)
                     {
                         stationBrand = stationList.get(stationCount).get("brand");
-                        stationIcon = getIconString(stationBrand);
+                        stationCode = stationList.get(stationCount).get("code");
+                        stationIcon = IconStringCall.getIconString(stationBrand);
                         Bitmap iconBitmap = null;
                         try {
                             InputStream str = getApplicationContext().getAssets().open(stationIcon);
@@ -318,91 +324,26 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                             textStyle.setTextSize(35f);
                             priceText.drawRect(0, 0, 160, 60, new Paint(Color.BLACK));
                             priceText.drawBitmap(mutBitmap, 25, 50, new Paint());
-                            priceText.drawText(fuelType + ":" + price, 75f, 45f, textStyle);
+                            priceText.drawText(price, 75f, 45f, textStyle);
                         } catch (IOException e) {
                             Log.e(TAG, e.getMessage());
                         }
-                        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(fuelType + ":" + price).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)));
+                        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(stationCode).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)));
                     }
                 }
+                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        Intent stationIntent = new Intent(getApplicationContext(), StationActivity.class);
+                        stationIntent.putExtra("stationData", getStationData(stationList, marker.getTitle()));
+                        stationIntent.putExtra("stationCode", marker.getTitle());
+                        stationIntent.putExtra("authCode", authCode);
+                        startActivity(stationIntent);
+                        return false;
+                    }
+                });
             }
         });
-    }
-
-    /*
-    This method takes in the string of the petrol station brand name
-    and returns a string containing the relevant image filename, contained
-    in the Assets folder
-     */
-    public String getIconString(String brand) {
-        String iconFile;
-
-        switch (brand) {
-            case "7-Eleven":
-                iconFile = "711icon.png";
-                break;
-            case "BP":
-                iconFile = "bpIcon.png";
-                break;
-            case "Caltex":
-                iconFile = "caltexIcon.png";
-                break;
-            case "Caltex Woolworths":
-                iconFile = "woolworthsCaltex.png";
-                break;
-            case "Coles Express":
-                iconFile = "colesexpress.png";
-                break;
-            case "Costco":
-                iconFile = "costcoLogo.png";
-                break;
-            case "Enhance":
-                iconFile = "defaultLogo.png";
-                break;
-            case "Independent":
-                iconFile = "defaultLogo.png";
-                break;
-            case "Liberty":
-                iconFile = "liberty.png";
-                break;
-            case "Lowes":
-                iconFile = "lowes.png";
-                break;
-            case "Matilda":
-                iconFile = "matilda.png";
-                break;
-            case "Metro Fuel":
-                iconFile = "metro.png";
-                break;
-            case "Mobil":
-                iconFile = "mobil.png";
-                break;
-            case "Prime Petroleum":
-                iconFile = "defaultLogo.png";
-                break;
-            case "Puma Energy":
-                iconFile = "puma.png";
-                break;
-            case "Shell":
-                iconFile = "shell.png";
-                break;
-            case "Speedway":
-                iconFile = "speedway.png";
-                break;
-            case "Tesla":
-                iconFile = "tesla.png";
-                break;
-            case "United":
-                iconFile = "united.png";
-                break;
-            case "Westside":
-                iconFile = "westside.png";
-                break;
-            default:
-                iconFile = "defaultLogo.png";
-                break;
-        }
-        return iconFile;
     }
 
     public void getDeviceLocation() {
@@ -497,6 +438,19 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
             settingsList.add(getAllStations());
         }
         return settingsList;
+    }
+
+    private HashMap<String, String> getStationData(ArrayList<HashMap<String, String>> stationList, String code) {
+        HashMap returnList = null;
+        for (HashMap<String, String> station:stationList) {
+            if(station.get("code").equals(code)) {
+                returnList = new HashMap();
+                returnList.put("brand", station.get("brand"));
+                returnList.put("name", station.get("name"));
+                returnList.put("address", station.get("address"));
+            }
+        }
+        return returnList;
     }
 }
 

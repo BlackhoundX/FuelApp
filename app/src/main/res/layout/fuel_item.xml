@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:weightSum="1">
+
+    <TextView
+        android:id="@+id/fuel_code_txt"
+        android:layout_width="fill_parent"
+        android:layout_height="100dp"
+        android:layout_weight="0.5"
+        android:layout_margin="10dp"
+        android:text="TextView"
+        android:textSize="24sp"
+        android:gravity="left|center_vertical"/>
+
+    <TextView
+        android:id="@+id/fuel_price_txt"
+        android:layout_width="fill_parent"
+        android:layout_height="100dp"
+        android:layout_weight="0.5"
+        android:layout_margin="10dp"
+        android:text="TextView"
+        android:textSize="24sp"
+        android:gravity="right|center_vertical"/>
+
+
+</LinearLayout>
