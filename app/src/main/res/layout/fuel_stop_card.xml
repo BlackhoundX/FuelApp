@@ -2,12 +2,91 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="120dp">
 
-    <android.support.v7.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/rvFuelStopCard"
-        android:scrollbars="vertical"/>
+    <android.support.v7.widget.CardView
+        android:id="@+id/fuelStopView"
+        android:layout_width="350dp"
+        android:layout_height="95dp"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        >
+
+        <TextView
+            android:id="@+id/dateTextField"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:textStyle="bold"
+            android:textSize="16sp" />
+        <TextView
+            android:id="@+id/fuelTypeTextField"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="175dp"
+            android:layout_marginTop="10dp"
+            android:textStyle="bold"
+            android:textSize="16sp" />
+
+
+
+        <TextView
+            android:id="@+id/odometerTextField"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="30dp"
+            android:textSize="16sp" />
+        <TextView
+            android:id="@+id/litresTextField"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="175dp"
+            android:layout_marginTop="30dp"
+            android:textSize="16sp" />
+
+
+        <TextView
+            android:id="@+id/brandTextField"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="50dp"
+            android:textSize="16sp" />
+        <TextView
+            android:id="@+id/centsPerLitreField"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="175dp"
+            android:layout_marginTop="50dp"
+            android:textSize="16sp" />
+
+
+        <TextView
+            android:id="@+id/locationTextField"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="70dp"
+            android:textSize="16sp" />
+        <TextView
+            android:id="@+id/totalCostTextField"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="175dp"
+            android:layout_marginTop="70dp"
+            android:textSize="16sp" />
+
+    </android.support.v7.widget.CardView>
+
 
 </FrameLayout>

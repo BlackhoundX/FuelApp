@@ -65,7 +65,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener {
+public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCallback{
 
     private static final String TAG = FuelMapActivity.class.getSimpleName();
     public GoogleMap mMap;
@@ -87,8 +87,8 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
     private final String KEY_CAMERA_POSITION = "camera_position";
     private final String KEY_LOCATION = "location";
 
-    public GoogleApiClient mGoogleApiClient;
-    private static final int RC_SIGN_IN = 9001;
+    //public GoogleApiClient mGoogleApiClient;
+    //private static final int RC_SIGN_IN = 9001;
 
     private boolean mLocationPermissionGranted;
 
@@ -101,7 +101,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
     private int transactionId = 0;
     private LatLngBounds NSW = new LatLngBounds(new LatLng(-34, 141), new LatLng(-28, 154));
 
-    static String googleID = "";
+    //static String googleID = "";
 
     ArrayList<HashMap<String, String>> stationList;
     String[] stationType = new String[]{"7-Eleven","BP", "Budget","Caltex","Caltex Woolworths","Coles Express","Costco","Enhance","Independent","Liberty","Lowes","Matilda","Metro Fuel","Mobil","Prime Petroleum","Puma Energy","Shell","Speedway","Tesla","United","Westside"};
@@ -151,21 +151,6 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
             }
         });
 
-        // Configure sign-in to request the user's ID, email address, and basic
-        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestId()
-                .build();
-
-        // Build a GoogleApiClient with access to the Google Sign-In API and the
-        // options specified by gso.
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this/* OnConnectionFailedListener */)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
-
-        signIn();
-
         FloatingActionButton listViewBtn = (FloatingActionButton)findViewById(R.id.list_view_button);
         listViewBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -201,6 +186,15 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                 startActivity(filterIntent);
             }
         });
+
+        FloatingActionButton fuelChartButton = (FloatingActionButton)findViewById(R.id.viewChartButton);
+        fuelChartButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent filterIntent = new Intent(getApplicationContext(), FuelChartActivity.class);
+                startActivity(filterIntent);
+            }
+        });
     }
 
     @Override
@@ -211,43 +205,6 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
             super.onSaveInstanceState(outState);
         }
     }
-
-    private void signIn() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-    // [START onActivityResult]
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleSignInResult(result);
-        }
-    }
-    // [END onActivityResult]
-
-    // [START handleSignInResult]
-    private void handleSignInResult(GoogleSignInResult result) {
-        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
-        if (result.isSuccess()) {
-            // Signed in successfully, show authenticated UI.
-            GoogleSignInAccount acct = result.getSignInAccount();
-            Log.d(TAG, "User ID is: " + acct.getId());
-            googleID = acct.getId();
-        }
-    }
-    // [END handleSignInResult]
-
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        // An unresolvable error has occurred and Google APIs (including Sign-In) will not
-        // be available.
-        Log.d(TAG, "onConnectionFailed:" + connectionResult);
-    }
-
 
     /**
      * Does stuff

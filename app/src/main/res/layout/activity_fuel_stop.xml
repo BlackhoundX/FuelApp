@@ -27,11 +27,13 @@
             android:textSize="22sp" />
 
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/colorPrimary" >
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -53,11 +55,24 @@
             android:background="@android:color/holo_green_dark"
             android:text="Fuel Analysis" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="5dp"
         android:background="@color/colorPrimary" >
     </LinearLayout>
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/sign_in_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@color/colorPrimary" >
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -96,6 +111,7 @@
             android:layout_height="match_parent"
             android:background="@color/colorPrimaryDark"
             android:text="Add Vehicle" />
+
     </LinearLayout>
     <LinearLayout
         android:layout_width="fill_parent"
@@ -119,7 +135,7 @@
             android:layout_height="wrap_content"
             android:ems="5"
             android:inputType="text"
-            android:textSize="14sp" />
+            android:textSize="14sp"
             android:text="" />
 
     </LinearLayout>

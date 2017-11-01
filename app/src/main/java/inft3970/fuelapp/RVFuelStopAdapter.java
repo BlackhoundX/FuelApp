@@ -1,58 +1,72 @@
 package inft3970.fuelapp;
 
-import android.content.res.AssetManager;
-import android.graphics.drawable.Drawable;
+import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
-import static inft3970.fuelapp.R.id.dateText;
+import static inft3970.fuelapp.FuelStopActivity.round;
+
 
 /**
- * Created by quikb on 22-Oct-17.
+ * Class: RVFuelStopAdapter
+ * Author: Matt Couch
+ * Purpose: This class handles the Recycler View for displaying each instance of the FuelStopCard object.
+ * Creation Date: 22-Oct-17
+ * Modification Date: 30-Oct-17
  */
 
 public class RVFuelStopAdapter extends RecyclerView.Adapter<RVFuelStopAdapter.FuelStopHolder> {
 
     private static final String TAG = RVFuelStopAdapter.class.getSimpleName();
+    Context context;
 
-    Map<Integer, List<String>> fuelStopList = new HashMap<Integer, List<String>>();
-    //String[] fuelStopDetails = new String[];
+    List<List<String>> fuelStops;  //The list object containing the fuel stop data
 
-    RVFuelStopAdapter(Map fuelStopList) {
-        this.fuelStopList = fuelStopList;
+    /**
+     * Method: RVFuelStopAdapter
+     * Purpose: Acts as the constructor of this class. Points the fuelStops List object to the list
+     * in FuelAnalyticsActivity which has the data filled out
+     * Returns: None
+     */
+    RVFuelStopAdapter(List fuelStops) {
+        context = App.getContext();
+        this.fuelStops = fuelStops;
     }
 
+    /**
+     * Method: getItemCount
+     * Purpose: Retrieves the length of the list being used. This is called by the Recycler View itself
+     * Returns: The size of the list as an integer
+     */
     @Override
     public int getItemCount() {
-        return fuelStopList.size();
+        return FuelAnalyticsActivity.fuelStopIDList.size()-1;
     }
 
+    /**
+     * Method: FuelStopHolder
+     * Purpose: Creates the layout for the recycler to populate with data, and calls the method to create each Holder
+     * Returns: None
+     */
     @Override
-    public RVFuelStopAdapter.FuelStopHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+    public FuelStopHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.fuel_stop_card, viewGroup, false);
         RVFuelStopAdapter.FuelStopHolder fsh = new RVFuelStopAdapter.FuelStopHolder(v);
         return fsh;
     }
 
+    /**
+     * Class: FuelStopHolder
+     * Author: Matt Couch
+     * Purpose: This class creates each individual instance of the data container for display, and initialises the fields
+     * Creation Date: 22-Oct-17
+     * Modification Date: 30-Oct-17
+     */
     public static class FuelStopHolder extends RecyclerView.ViewHolder {
         CardView cv;
         TextView date;
@@ -67,62 +81,43 @@ public class RVFuelStopAdapter extends RecyclerView.Adapter<RVFuelStopAdapter.Fu
         FuelStopHolder(View itemView) {
             super(itemView);
             cv = (CardView)itemView.findViewById(R.id.fuelStopView);
-            date = (TextView)itemView.findViewById(R.id.dateText);
-            fuelType = (TextView)itemView.findViewById(R.id.fuelTypeText);
-            odometer = (TextView)itemView.findViewById(R.id.odometerText);
-            litres = (TextView)itemView.findViewById(R.id.litresText);
-            brand = (TextView)itemView.findViewById(R.id.brandText);
-            centsPerLitreText = (TextView)itemView.findViewById(R.id.centsPerLitre);
-            location = (TextView)itemView.findViewById(R.id.locationText);
-            totalCost = (TextView)itemView.findViewById(R.id.totalCostText);
+            date = (TextView)itemView.findViewById(R.id.dateTextField);
+            fuelType = (TextView)itemView.findViewById(R.id.fuelTypeTextField);
+            odometer = (TextView)itemView.findViewById(R.id.odometerTextField);
+            litres = (TextView)itemView.findViewById(R.id.litresTextField);
+            brand = (TextView)itemView.findViewById(R.id.brandTextField);
+            centsPerLitreText = (TextView)itemView.findViewById(R.id.centsPerLitreField);
+            location = (TextView)itemView.findViewById(R.id.locationTextField);
+            totalCost = (TextView)itemView.findViewById(R.id.totalCostTextField);
         }
     }
 
+    /**
+     * Method: onBindViewHolder
+     * Purpose: Takes in the Holder object and populates it with data based on the integer input as
+     * a reference to the particular series of data.
+     * Returns: None
+     */
     @Override
     public void onBindViewHolder(RVFuelStopAdapter.FuelStopHolder viewStopHolder, int i) {
-        viewStopHolder.date.setText("test");
-        viewStopHolder.fuelType.setText("test");
-        viewStopHolder.odometer.setText("test");
-        viewStopHolder.litres.setText("test");
-        viewStopHolder.brand.setText("test");
-        viewStopHolder.centsPerLitreText.setText("test");
-        viewStopHolder.location.setText("test");
-        viewStopHolder.totalCost.setText("test");
+        viewStopHolder.date.setText(fuelStops.get(i).get(0));
+        viewStopHolder.fuelType.setText(fuelStops.get(i).get(1));
+        viewStopHolder.odometer.setText(fuelStops.get(i).get(2) + "km");
+        viewStopHolder.litres.setText(fuelStops.get(i).get(3) + " litres");
+        viewStopHolder.brand.setText(fuelStops.get(i).get(4));
+        viewStopHolder.centsPerLitreText.setText(fuelStops.get(i).get(5) + " cents/litre");
+        viewStopHolder.location.setText(fuelStops.get(i).get(6));
 
-        //HERE IS WHERE WE FILL THE CARD
-
-
-
-        /*if(stationList.get(i).get("name") != null) {
-            stationViewHolder.stationName.setText(stationList.get(i).get("name"));
-        }
-        if(stationList.get(i).get("address") != null) {
-            stationViewHolder.stationAddress.setText(stationList.get(i).get("address"));
-        }
-        if(stationList.get(i).get("price") != null) {
-            stationViewHolder.price.setText(stationList.get(i).get("price"));
-        }
-        if(stationList.get(i).get("lastUpdated") != null) {
-            stationViewHolder.stationLastUpdated.setText(getFormattedLastUpdated(stationList.get(i).get("lastUpdated")));
-        }
-        if(stationList.get(i).get("distance") != null) {
-            String distanceText = stationList.get(i).get("distance") + " Km Away";
-            stationViewHolder.stationKmFromPoint.setText(distanceText);
-        }
-        if(stationList.get(i).get("brand") != null) {
-            try {
-                String icon = getIconString(stationList.get(i).get("brand"));
-                AssetManager mg = App.getContext().getAssets();
-                InputStream ims = mg.open(icon);
-                Drawable draw = Drawable.createFromStream(ims, null);
-                stationViewHolder.stationIcon.setImageDrawable(draw);
-                ims.close();
-            } catch (IOException ex) {
-                Log.e(TAG, ex.getMessage());
-            }
-        }*/
+        //Calculates the total cost of the fuel stop based on the other values for the stop
+        double totalCost = Double.parseDouble(fuelStops.get(i).get(5)) * Double.parseDouble(fuelStops.get(i).get(3)) / 100.0;
+        totalCost = round(totalCost, 2);
+        viewStopHolder.totalCost.setText("$" + totalCost);
     }
 
+    /**
+     * Method: onAttachedToRecyclerView
+     * Purpose: Automatically generated method which is called on by the Recycler as it starts observing this Adapter
+     */
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
