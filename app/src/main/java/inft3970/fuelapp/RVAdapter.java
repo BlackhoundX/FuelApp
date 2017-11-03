@@ -1,6 +1,8 @@
 package inft3970.fuelapp;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -40,6 +42,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.StationViewHolder>
 
     private static final String TAG = RVAdapter.class.getSimpleName();
     ArrayList<HashMap<String, String>> stationList;
+    Context context = App.getContext();
 
     RVAdapter(ArrayList stationList) {
         this.stationList = stationList;
@@ -81,7 +84,24 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.StationViewHolder>
     }
 
     @Override
-    public void onBindViewHolder(StationViewHolder stationViewHolder, int i) {
+    public void onBindViewHolder(final StationViewHolder stationViewHolder, final int i) {
+        stationViewHolder.cv.setClickable(true);
+        stationViewHolder.cv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                HashMap<String, String> stationData = new HashMap<>();
+                stationData.put("brand", stationList.get(i).get("brand"));
+                stationData.put("name", stationList.get(i).get("name"));
+                stationData.put("address", stationList.get(i).get("address"));
+                stationData.put("latitude", stationList.get(i).get("latitude"));
+                stationData.put("longitude", stationList.get(i).get("longitude"));
+                Intent stationIntent = new Intent(context, StationActivity.class);
+                stationIntent.putExtra("stationData", stationData);
+                stationIntent.putExtra("stationCode", stationList.get(i).get("code"));
+                context.startActivity(stationIntent);
+            }
+        });
+
         if(stationList.get(i).get("name") != null) {
             stationViewHolder.stationName.setText(stationList.get(i).get("name"));
         }

@@ -9,6 +9,7 @@ import android.content.Context;
 
 public class App extends Application {
     private static Context mContext;
+    private static String authCode;
 
     public static Context getContext() {
         return mContext;
@@ -18,4 +19,7 @@ public class App extends Application {
         mContext = inputContext;
     }
 
+    public static void setAuthCode(String authCodeInput) {authCode = authCodeInput; }
+
+    public static String getAuthCode() { return authCode; }
 }

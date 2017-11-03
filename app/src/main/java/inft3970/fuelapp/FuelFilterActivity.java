@@ -58,7 +58,7 @@ public class FuelFilterActivity extends Activity implements AdapterView.OnItemSe
                 if((selectedBrands != null) && selectedType != null) {
                     if(!selectedBrands.isEmpty()) {
                         String[] settingsData = new String[2];
-                        settingsData[0] = getTypeCode(selectedType);
+                        settingsData[0] = FuelCodeNameCall.getTypeCode(selectedType);
                         settingsData[1] = getBrandNamesText(selectedBrands, true);
                         XmlSettings xmlSettings = new XmlSettings();
                         xmlSettings.writeXml(settingsData);
@@ -178,18 +178,6 @@ public class FuelFilterActivity extends Activity implements AdapterView.OnItemSe
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         selectedType = null;
-    }
-
-    public String getTypeCode(String typeName) {
-        String[] typeCodes = getResources().getStringArray(R.array.fuel_codes);
-        String[] typeNames = getResources().getStringArray(R.array.fuel_names);
-        String typeCode = null;
-        for(int i = 0;i < typeCodes.length;i++) {
-            if(typeNames[i].equals(typeName)) {
-                typeCode = typeCodes[i];
-            }
-        }
-        return typeCode;
     }
 
 }

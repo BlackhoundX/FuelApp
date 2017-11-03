@@ -4,4 +4,5 @@
     <string name="title_activity_fuel_list">Fuel List</string>
     <string name="station_icon">Station Icon</string>
     <string name="signed_in_fmt">Signed in as: %s</string>
+    <string name="title_activity_te">te</string>
 </resources>

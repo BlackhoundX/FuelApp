@@ -74,8 +74,6 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
     public TextView fuelNameText;
 
     private FusedLocationProviderClient mFusedLocationProviderClient;
-    private GeoDataClient mGeoDataClient;
-    private PlaceDetectionClient mPlaceDetectionClient;
 
     private final LatLng DEFAULT_LOCATION = new LatLng(-32.8927673,151.7019888);
     private static final int DEFAULT_ZOOM = 15;
@@ -123,13 +121,12 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         fuelNameText = (TextView)findViewById(R.id.fuel_name_text);
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        mGeoDataClient = Places.getGeoDataClient(this, null);
-        mPlaceDetectionClient = Places.getPlaceDetectionClient(this, null);
         fuelAPIKey = getString(R.string.fuel_api_key);
         authHeaders = new String[]{"Authorization", getResources().getString(R.string.fuel_api_base64)};
 
         AuthCodeCall codeCall = new AuthCodeCall();
         authCode = codeCall.getAuthCode(authHeaders, pBar);
+        App.setAuthCode(authCode);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -226,14 +223,14 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
             public void onCameraIdle() {
                 center = mMap.getCameraPosition().target;
                 mMap.clear();
-                stationList = new ArrayList<HashMap<String, String>>();
+                stationList = new ArrayList<>();
                 Date time = new Date();
                 String timeString = dateFormat.format(time);
                 String stationBrand;
                 String stationIcon;
-                ArrayList<String> stationSettings = new ArrayList<String>();
+                ArrayList<String> stationSettings;
                 stationSettings = getSettings();
-                fuelNameText.setText(stationSettings.get(0));
+                fuelNameText.setText(FuelCodeNameCall.getTypeName(stationSettings.get(0)));
                 headers = new String[][]{{"apikey", fuelAPIKey}, {"transactionid", Integer.toString(transactionId++)}, {"requesttimestamp", timeString}, {"Content-Type", "application/json; charset=utf-8"}, {"Authorization", "Bearer " + authCode}};
                 body = "{" +
                         "    \"fueltype\":\"" + stationSettings.get(0) + "\"," +
@@ -250,7 +247,6 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                 Double latitude = 0.0;
                 Double longitude = 0.0;
                 String price = "N/A";
-                String fuelType = stationSettings.get(0);
                 String stationCode;
                 for (int stationCount = 0; stationCount < stationList.size(); stationCount++) {
                     if (stationList.get(stationCount).get("latitude") != null) {
@@ -294,7 +290,6 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                         Intent stationIntent = new Intent(getApplicationContext(), StationActivity.class);
                         stationIntent.putExtra("stationData", getStationData(stationList, marker.getTitle()));
                         stationIntent.putExtra("stationCode", marker.getTitle());
-                        stationIntent.putExtra("authCode", authCode);
                         startActivity(stationIntent);
                         return false;
                     }
@@ -405,6 +400,8 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                 returnList.put("brand", station.get("brand"));
                 returnList.put("name", station.get("name"));
                 returnList.put("address", station.get("address"));
+                returnList.put("latitude", station.get("latitude"));
+                returnList.put("longitude", station.get("longitude"));
             }
         }
         return returnList;

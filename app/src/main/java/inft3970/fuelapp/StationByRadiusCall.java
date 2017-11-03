@@ -55,7 +55,7 @@ public class StationByRadiusCall {
 
 
         @Override
-        protected  void onPreExecute() {
+        protected void onPreExecute() {
             super.onPreExecute();
             progressBar.setVisibility(View.VISIBLE);
         }
@@ -127,7 +127,7 @@ public class StationByRadiusCall {
 
                     }
                 } else {
-                    Log.e(TAG, "Couldn't get json from server.");
+                    Log.e(TAG, "No Connection. Try Again Later");
                     fuelMap.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
