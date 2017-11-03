@@ -72,6 +72,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
     public CameraPosition mCameraPosition;
     public ProgressBar pBar;
     public TextView fuelNameText;
+    public CardView fuelNameCard;
 
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
@@ -99,8 +100,6 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
     private int transactionId = 0;
     private LatLngBounds NSW = new LatLngBounds(new LatLng(-34, 141), new LatLng(-28, 154));
 
-    //static String googleID = "";
-
     ArrayList<HashMap<String, String>> stationList;
     String[] stationType = new String[]{"7-Eleven","BP", "Budget","Caltex","Caltex Woolworths","Coles Express","Costco","Enhance","Independent","Liberty","Lowes","Matilda","Metro Fuel","Mobil","Prime Petroleum","Puma Energy","Shell","Speedway","Tesla","United","Westside"};
 
@@ -119,6 +118,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         pBar = (ProgressBar)findViewById(R.id.progressBar);
         final CardView searchCardView = (CardView)findViewById(R.id.search_card_view);
         fuelNameText = (TextView)findViewById(R.id.fuel_name_text);
+        fuelNameCard = (CardView)findViewById(R.id.fuel_name_card);
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         fuelAPIKey = getString(R.string.fuel_api_key);
@@ -139,7 +139,9 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
             public void onPlaceSelected(Place place) {
                 LatLng placeLatLng = place.getLatLng();
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(placeLatLng));
-                searchCardView.setVisibility(View.INVISIBLE);
+                searchCardView.setVisibility(View.GONE);
+                fuelNameCard.setVisibility(View.VISIBLE);
+
             }
 
             @Override
@@ -167,11 +169,19 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
             }
         });
 
-        FloatingActionButton searchBtn = (FloatingActionButton)findViewById(R.id.search_button);
+        final FloatingActionButton searchBtn = (FloatingActionButton)findViewById(R.id.search_button);
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchCardView.setVisibility(View.VISIBLE);
+                if(searchCardView.getVisibility() == View.GONE) {
+                    searchBtn.setImageResource(R.drawable.places_ic_clear);
+                    fuelNameCard.setVisibility(View.GONE);
+                    searchCardView.setVisibility(View.VISIBLE);
+                } else {
+                    searchBtn.setImageResource(R.drawable.places_ic_search);
+                    fuelNameCard.setVisibility(View.VISIBLE);
+                    searchCardView.setVisibility(View.GONE);
+                }
             }
         });
 

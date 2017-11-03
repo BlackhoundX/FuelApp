@@ -91,28 +91,34 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:layout_gravity="bottom">
+        android:layout_gravity="bottom"
+        >
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/call_btn"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_weight="0.3"
             android:layout_gravity="center"
+            android:layout_weight="0.3"
+            android:backgroundTint="@color/colorPrimary"
             android:text="Call" />
 
         <Button
+            android:id="@+id/website_btn"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_weight="0.3"
             android:layout_gravity="center"
-            android:text="Website"/>
+            android:layout_weight="0.3"
+            android:backgroundTint="@color/colorPrimary"
+            android:text="Website" />
 
         <Button
+            android:id="@+id/direction_btn"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_weight="0.3"
             android:layout_gravity="center"
+            android:layout_weight="0.3"
+            android:backgroundTint="@color/colorPrimary"
             android:text="Directions" />
 
     </LinearLayout>
