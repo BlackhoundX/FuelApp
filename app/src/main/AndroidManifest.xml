@@ -49,10 +49,22 @@
             android:name=".FuelFilterActivity"
             android:label="Filter"
             android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".FuelAnalyticsActivity"
+            android:label="Filter"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".PostcodeChartDisplay"
+            android:label="Filter"
+            android:screenOrientation="landscape" />
+
         <activity
             android:name=".StationActivity"
             android:label="Station View"
             android:screenOrientation="portrait" />
+
         <activity android:name=".SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

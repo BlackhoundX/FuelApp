@@ -89,8 +89,8 @@
         android:id="@+id/fuel_name_card"
         android:layout_width="100dp"
         android:layout_height="20dp"
-        android:layout_gravity="center|top"
-        android:layout_margin="10dp">
+        android:layout_gravity="center|bottom"
+        android:layout_margin="70dp">
 
 
         <TextView
@@ -115,5 +115,15 @@
         android:layout_marginStart="10dp"
         android:focusable="true" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/closeSearchButton"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_gravity="top|right"
+        android:layout_marginBottom="7dp"
+        android:clickable="true"
+        android:visibility="invisible"
+        app:backgroundTint="@color/colorPrimaryDark"
+        app:srcCompat="@android:drawable/presence_offline" />
 
 </FrameLayout>
