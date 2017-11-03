@@ -90,6 +90,8 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
 
     private boolean mLocationPermissionGranted;
 
+    FloatingActionButton hideSearch;
+
     private String authCode;
     private LatLng center;
     private String[] authHeaders;
@@ -148,6 +150,8 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
             }
         });
 
+        hideSearch = (FloatingActionButton)findViewById(R.id.closeSearchButton);
+
         FloatingActionButton listViewBtn = (FloatingActionButton)findViewById(R.id.list_view_button);
         listViewBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -172,6 +176,15 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
             @Override
             public void onClick(View v) {
                 searchCardView.setVisibility(View.VISIBLE);
+                hideSearch.setVisibility(View.VISIBLE);
+            }
+        });
+
+        hideSearch.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                searchCardView.setVisibility(View.INVISIBLE);
+                hideSearch.setVisibility(View.INVISIBLE);
             }
         });
 

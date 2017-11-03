@@ -92,6 +92,18 @@ public class FuelChartActivity extends FragmentActivity implements AdapterView.O
 
         postCodeSpinner.setOnItemSelectedListener(this);
         postCodeSpinner.setAdapter(adapter);
+
+        futurePrice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String selectedPostcode = "0000";
+                Intent intent = new Intent(getBaseContext(), PostcodeChartDisplay.class);
+                intent.putExtra("PostCodeValue", selectedPostcode);
+                intent.putExtra("PastValues", false);
+                Toast.makeText(getApplicationContext(), "Displaying future price predictions.", Toast.LENGTH_LONG).show();
+                startActivity(intent);
+            }
+        });
     }
 
     /**
@@ -127,18 +139,6 @@ public class FuelChartActivity extends FragmentActivity implements AdapterView.O
                 intent.putExtra("PostCodeValue", selectedPostcode);
                 intent.putExtra("PastValues", true);
                 Toast.makeText(getApplicationContext(), "Displaying past prices for " + selectedPostcode + ".", Toast.LENGTH_LONG).show();
-                startActivity(intent);
-            }
-        });
-
-        futurePrice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String selectedPostcode = postCode;
-                Intent intent = new Intent(getBaseContext(), PostcodeChartDisplay.class);
-                intent.putExtra("PostCodeValue", selectedPostcode);
-                intent.putExtra("PastValues", false);
-                Toast.makeText(getApplicationContext(), "Displaying future price predictions for " + selectedPostcode + ".", Toast.LENGTH_LONG).show();
                 startActivity(intent);
             }
         });

@@ -73,7 +73,7 @@ public class PostcodeChartDisplay extends FragmentActivity {
             });
         }
         else{  //Display the chart for future values
-            storageRef.child("FUTURE CHART FOLDER NAME").child(postCode + ".png").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            storageRef.child("Predictions").child("Predictions.JPG").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
                     Picasso.with(context).load(uri.toString()).fit().into(chartImage); //Load the image

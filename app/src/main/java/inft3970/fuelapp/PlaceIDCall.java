@@ -46,7 +46,7 @@ public class PlaceIDCall {
         @Override
         protected String doInBackground(Void... arg0) {
             HttpHandler httpHandler = new HttpHandler();
-            String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword=" + placeAddress + "&location="+ placeLatitude +","+placeLongitude+"&radius=50&types=gas_station&key=" + context.getString(R.string.google_api_key);
+            String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword=" + placeAddress.replaceAll(" ", "%20") + "&location="+ placeLatitude +","+placeLongitude+"&radius=50&types=gas_station&key=" + context.getString(R.string.google_api_key);
             String jsonStr = httpHandler.getServiceCall(url, "GET", null, null);
             Log.e(TAG, "response from url: " + jsonStr);
             if (jsonStr != null) {
