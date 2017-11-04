@@ -234,7 +234,6 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onCameraIdle() {
-                Toast.makeText(getApplicationContext(), "Radius is: " + radiusKm, Toast.LENGTH_LONG).show();
                 center = mMap.getCameraPosition().target;
                 mMap.clear();
                 stationList = new ArrayList<>();
