@@ -120,7 +120,7 @@ public class PlaceDetailsCall {
                     @Override
                     public void run() {
                         Toast.makeText(context,
-                                "Couldn't get json from server. Check LogCat for possible errors!",
+                                "Cannot get Station Details.",
                                 Toast.LENGTH_LONG)
                                 .show();
                     }

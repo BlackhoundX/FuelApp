@@ -88,7 +88,7 @@ public class FuelPriceByCodeCall {
                     @Override
                     public void run() {
                         Toast.makeText(context,
-                                "Couldn't get json from server. Check LogCat for possible errors!",
+                                "Cannot Connect to Server. Please Try Again.",
                                 Toast.LENGTH_LONG)
                                 .show();
                     }

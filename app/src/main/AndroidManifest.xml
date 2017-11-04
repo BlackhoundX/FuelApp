@@ -73,7 +73,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".FuelChartActivity"/>
-        <activity android:name=".PostcodeChartDisplay"/>
     </application>
 
 </manifest>

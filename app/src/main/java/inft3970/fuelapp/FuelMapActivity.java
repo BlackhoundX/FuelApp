@@ -273,6 +273,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                     {
                         stationBrand = stationList.get(stationCount).get("brand");
                         stationCode = stationList.get(stationCount).get("code");
+                        String cheapStationCode = getCheapestStation(stationList);
                         stationIcon = IconStringCall.getIconString(stationBrand);
                         Bitmap iconBitmap = null;
                         try {
@@ -281,13 +282,23 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                             Bitmap mutBitmap = unmutBitmap.copy(Bitmap.Config.ARGB_8888, true);
                             iconBitmap = Bitmap.createBitmap(unmutBitmap.getWidth() + 65, (unmutBitmap.getHeight() + 50), Bitmap.Config.ARGB_8888);
                             Canvas priceText = new Canvas(iconBitmap);
-                            Paint textStyle = new Paint();
-                            textStyle.setColor(Color.WHITE);
-                            textStyle.setTextAlign(Paint.Align.CENTER);
-                            textStyle.setTextSize(35f);
-                            priceText.drawRect(0, 0, 160, 60, new Paint(Color.BLACK));
-                            priceText.drawBitmap(mutBitmap, 25, 50, new Paint());
-                            priceText.drawText(price, 75f, 45f, textStyle);
+                            if(cheapStationCode.equals(stationCode)) {
+                                Paint textStyle = new Paint();
+                                textStyle.setColor(Color.GREEN);
+                                textStyle.setTextAlign(Paint.Align.CENTER);
+                                textStyle.setTextSize(45f);
+                                priceText.drawRect(0, 0, 160, 60, new Paint(Color.BLACK));
+                                priceText.drawBitmap(mutBitmap, 25, 50, new Paint());
+                                priceText.drawText(price, 75f, 45f, textStyle);
+                            } else {
+                                Paint textStyle = new Paint();
+                                textStyle.setColor(Color.WHITE);
+                                textStyle.setTextAlign(Paint.Align.CENTER);
+                                textStyle.setTextSize(45f);
+                                priceText.drawRect(0, 0, 160, 60, new Paint(Color.BLACK));
+                                priceText.drawBitmap(mutBitmap, 25, 50, new Paint());
+                                priceText.drawText(price, 75f, 45f, textStyle);
+                            }
                         } catch (IOException e) {
                             Log.e(TAG, e.getMessage());
                         }
@@ -415,6 +426,18 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
             }
         }
         return returnList;
+    }
+
+    private String getCheapestStation(ArrayList<HashMap<String,String>> stationList) {
+        String cheapestCode = stationList.get(0).get("code");
+        Double cheapestPrice = Double.parseDouble(stationList.get(0).get("price"));
+        for(int count = 0;count < stationList.size();count++) {
+            if(cheapestPrice > Double.parseDouble(stationList.get(count).get("price"))) {
+                cheapestPrice = Double.parseDouble(stationList.get(count).get("price"));
+                cheapestCode = stationList.get(count).get("code");
+            }
+        }
+        return cheapestCode;
     }
 }
 
