@@ -2,6 +2,7 @@ package inft3970.fuelapp;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -45,14 +46,14 @@ public class FuelPriceAdapter extends RecyclerView.Adapter<FuelPriceAdapter.Fuel
         TextView fuelName;
         TextView price;
         TextView lastUpdated;
-        LinearLayout fuelLayout;
+        CardView fuelLayout;
 
         FuelPriceHolder(View itemView) {
             super(itemView);
             fuelName = (TextView)itemView.findViewById(R.id.fuel_code_txt);
             price = (TextView)itemView.findViewById(R.id.fuel_price_txt);
             lastUpdated = (TextView)itemView.findViewById(R.id.last_updated_txt);
-            fuelLayout = (LinearLayout)itemView.findViewById(R.id.fuel_item);
+            fuelLayout = (CardView)itemView.findViewById(R.id.fuel_item);
         }
     }
 

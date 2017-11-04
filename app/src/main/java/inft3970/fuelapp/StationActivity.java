@@ -123,12 +123,14 @@ public class StationActivity extends Activity {
 
         RecyclerView stationFuelRv = (RecyclerView) findViewById(R.id.station_fuel_rv);
         stationFuelRv.setHasFixedSize(false);
+        stationFuelRv.setNestedScrollingEnabled(false);
 
         LinearLayoutManager llmStation = new LinearLayoutManager(this);
         stationFuelRv.setLayoutManager(llmStation);
 
         FuelPriceAdapter adapter = new FuelPriceAdapter(fuelPrices);
         stationFuelRv.setAdapter(adapter);
+        stationFuelRv.getLayoutParams().height = 375 * adapter.getItemCount();
 
         if (placeDetails.getReviews() != null) {
             RecyclerView reviewRv = (RecyclerView) findViewById(R.id.review_rv);
