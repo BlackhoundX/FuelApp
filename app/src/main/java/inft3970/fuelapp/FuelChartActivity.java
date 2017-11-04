@@ -3,11 +3,13 @@ package inft3970.fuelapp;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -22,11 +24,13 @@ import com.firebase.client.Firebase;
  * Modification Date: 01-Nov-17
  */
 
-public class FuelChartActivity extends FragmentActivity implements AdapterView.OnItemSelectedListener{
+public class FuelChartActivity extends FragmentActivity implements AdapterView.OnItemClickListener{
     Context context;
-    boolean spinnerTouched = false;  //Boolean to prevent the spinner from automatically selecting
     Button previousPrice;
     Button futurePrice;
+    String selectedPostcode;
+    AutoCompleteTextView postCodeSpinner;
+    FloatingActionButton returnButton;
 
     //Array containing all the postcodes for NSW
     public static String [] Postcode = new String[]{"Select One","1579","2000","2007","2008","2011","2015","2016","2017","2018","2019","2020","2021","2022","2025","2026","2027","2029",
@@ -67,6 +71,14 @@ public class FuelChartActivity extends FragmentActivity implements AdapterView.O
 
         previousPrice = (Button)findViewById(R.id.previousPriceButton);
         futurePrice = (Button)findViewById(R.id.futurePriceButton);
+        returnButton = (FloatingActionButton)findViewById(R.id.returnButton);
+
+        returnButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 
     /**
@@ -78,19 +90,22 @@ public class FuelChartActivity extends FragmentActivity implements AdapterView.O
     @Override
     protected void onStart() {
         super.onStart();
-        spinnerTouched = false;
-        Spinner postCodeSpinner = (Spinner)findViewById(R.id.postcodeSpinner);
+        postCodeSpinner = (AutoCompleteTextView)findViewById(R.id.postCodeSpinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.support_simple_spinner_dropdown_item,Postcode);
-
-        postCodeSpinner.setOnTouchListener(new View.OnTouchListener() {
+        postCodeSpinner.setHint("Enter Postcode");
+        postCodeSpinner.setThreshold(1);
+        postCodeSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                spinnerTouched = true;
-                return false;
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if(isValid()) {
+                    selectedPostcode = postCodeSpinner.getEditableText().toString();
+                    activateButtons(selectedPostcode);
+                }
+                else{
+                    Toast.makeText(getApplicationContext(), "Error: " + selectedPostcode + " is not a valid NSW postcode.", Toast.LENGTH_LONG).show();
+                }
             }
         });
-
-        postCodeSpinner.setOnItemSelectedListener(this);
         postCodeSpinner.setAdapter(adapter);
 
         futurePrice.setOnClickListener(new View.OnClickListener() {
@@ -111,17 +126,17 @@ public class FuelChartActivity extends FragmentActivity implements AdapterView.O
      * Purpose: The listener for the postcode spinner. It allows the user to select a postcode.
      * Returns: None
      */
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if(spinnerTouched) {
-            String selectedPostcode = parent.getSelectedItem().toString();
-            if(!selectedPostcode.equals("Select One")) {
-                activateButtons(selectedPostcode);
+
+
+    public boolean isValid(){
+        boolean valid = false;
+        String input = postCodeSpinner.getEditableText().toString();
+        for(int i = 0; i < Postcode.length; i++){
+            if(input.equals(Postcode[i])){
+                valid = true;
             }
         }
-    }
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {
+        return valid;
     }
 
     /**
@@ -139,8 +154,14 @@ public class FuelChartActivity extends FragmentActivity implements AdapterView.O
                 intent.putExtra("PostCodeValue", selectedPostcode);
                 intent.putExtra("PastValues", true);
                 Toast.makeText(getApplicationContext(), "Displaying past prices for " + selectedPostcode + ".", Toast.LENGTH_LONG).show();
+                finish();
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
     }
 }

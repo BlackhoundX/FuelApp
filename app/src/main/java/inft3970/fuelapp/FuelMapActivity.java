@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -99,6 +100,8 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
     private String fuelAPIKey;
     private int transactionId = 0;
     private LatLngBounds NSW = new LatLngBounds(new LatLng(-34, 141), new LatLng(-28, 154));
+
+    public int radiusKm = 5;
 
     ArrayList<HashMap<String, String>> stationList;
     String[] stationType = new String[]{"7-Eleven","BP", "Budget","Caltex","Caltex Woolworths","Coles Express","Costco","Enhance","Independent","Liberty","Lowes","Matilda","Metro Fuel","Mobil","Prime Petroleum","Puma Energy","Shell","Speedway","Tesla","United","Westside"};
@@ -231,6 +234,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onCameraIdle() {
+                Toast.makeText(getApplicationContext(), "Radius is: " + radiusKm, Toast.LENGTH_LONG).show();
                 center = mMap.getCameraPosition().target;
                 mMap.clear();
                 stationList = new ArrayList<>();
@@ -248,7 +252,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                         "    \"namedlocation\":\"location\"," +
                         "    \"latitude\":\"" + Double.toString(center.latitude) + "\"," +
                         "    \"longitude\":\"" + Double.toString(center.longitude) + "\"," +
-                        "    \"radius\":\"10\"," +
+                        "    \"radius\":\"" + radiusKm + "\"," +
                         "    \"sortby\": \"price\"," +
                         "    \"sortascending\":\"true\"" +
                         "}";
@@ -406,6 +410,11 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
             brandString = brandString.substring(0, brandString.lastIndexOf(","));
             settingsList.remove(1);
             settingsList.add(1, brandString);
+
+            if(settingsList.size() == 3){
+                radiusKm = Integer.parseInt(settingsList.get(2));
+            }
+
         } else {
             settingsList.add(DEFAULT_FUEL_CODE);
             settingsList.add(getAllStations());

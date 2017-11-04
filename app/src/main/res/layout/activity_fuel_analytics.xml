@@ -241,10 +241,27 @@
         android:layout_height="5dp"
         android:background="@color/colorPrimary" >
     </LinearLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/rvFuelStopCard"
         android:scrollbars="vertical"/>
 
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/returnButton"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="bottom"
+            android:layout_margin="10dp"
+            android:visibility="visible"
+            app:backgroundTint="@color/colorPrimaryDark"
+            app:elevation="1dp"
+            app:fabSize="mini"
+            app:srcCompat="?attr/actionModeCloseDrawable" />
+</FrameLayout>
 </LinearLayout>

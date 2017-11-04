@@ -56,6 +56,9 @@ public class XmlSettings {
             serializer.startTag(null, "Brands");
             serializer.text(settingData[1]);
             serializer.endTag(null, "Brands");
+            serializer.startTag(null, "Radius");
+            serializer.text(settingData[2]);
+            serializer.endTag(null, "Radius");
             serializer.endTag(null, "Settings");
             serializer.endDocument();
             serializer.flush();

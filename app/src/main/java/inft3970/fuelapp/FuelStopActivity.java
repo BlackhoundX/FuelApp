@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -63,6 +64,8 @@ public class FuelStopActivity extends FragmentActivity implements AdapterView.On
     Button addVehicleButton;
     Button clearFormButton;
     Button addFuelButton;
+    FloatingActionButton returnButton;
+    FloatingActionButton helpButton;
 
     SignInButton sign_in_button;
 
@@ -105,6 +108,8 @@ public class FuelStopActivity extends FragmentActivity implements AdapterView.On
         pricePerLitreInput = (EditText)findViewById(R.id.pricePerLitreInput);
         costCalculatedOutput = (TextView)findViewById(R.id.costCalculatedOutput);
         locationInput = (EditText)findViewById(R.id.locationInput);
+        returnButton = (FloatingActionButton)findViewById(R.id.returnButton);
+        helpButton = (FloatingActionButton)findViewById(R.id.helpButton);
 
         userID = googleID;
 
@@ -164,6 +169,21 @@ public class FuelStopActivity extends FragmentActivity implements AdapterView.On
                     calculatedValue = round(calculatedValue, 2);
                     costCalculatedOutput.setText("$" + calculatedValue.toString());
                 }
+            }
+        });
+
+        returnButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        helpButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                AlertDialog helpScreen = displayHelp();
+                helpScreen.show();
             }
         });
 
@@ -453,6 +473,19 @@ public class FuelStopActivity extends FragmentActivity implements AdapterView.On
             }
         });
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        return builder.create();
+    }
+
+    public AlertDialog displayHelp() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(FuelStopActivity.this);
+        builder.setTitle("Fuel Stop Help");
+        builder.setMessage("To use this feature, create a vehicle. \nNext, add in the details of your fuel stop and press the Add FuelStop button.\n\nKeep adding fuel stops, and click the Analytics button to view a breakdown of your fuel usage.");
+        builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 

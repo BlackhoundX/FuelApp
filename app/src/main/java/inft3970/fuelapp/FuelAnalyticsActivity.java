@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -90,6 +91,8 @@ public class FuelAnalyticsActivity extends Activity implements AdapterView.OnIte
     TextView averageSpend;
     TextView averageCentsPerLitre;
 
+    FloatingActionButton returnButton;
+
     /**
      * Method: onCreate
      * Purpose: Automatically is called when the class is created. It initialises some variables and objects.
@@ -102,6 +105,7 @@ public class FuelAnalyticsActivity extends Activity implements AdapterView.OnIte
         Firebase.setAndroidContext(this);
         
         setContentView(R.layout.activity_fuel_analytics);
+        returnButton = (FloatingActionButton)findViewById(R.id.returnButton);
 
         //Root URL of the firebase database
         firebaseReference = new Firebase("https://inft3970-major-p-1503830364825.firebaseio.com/");
@@ -121,6 +125,13 @@ public class FuelAnalyticsActivity extends Activity implements AdapterView.OnIte
                 Intent filterIntent = new Intent(getApplicationContext(), FuelStopActivity.class);
                 finish();
                 startActivity(filterIntent);
+            }
+        });
+
+        returnButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                finish();
             }
         });
 

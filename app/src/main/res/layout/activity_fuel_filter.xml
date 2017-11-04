@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -8,67 +9,197 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="480dp"
-        android:orientation="vertical"
-        android:layout_margin="20dp">
+        android:layout_margin="20dp"
+        android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="2">
-
-        <TextView
-            android:id="@+id/fuel_type_text"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_weight="1"
-            android:text="Fuel Type"
-            android:textSize="24sp" />
+            android:orientation="horizontal"
+            android:weightSum="2">
 
-        <Spinner
-            android:id="@+id/fuel_type_spinner"
-            android:layout_width="0dp"
+            <TextView
+                android:id="@+id/fuel_type_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:text="Fuel Type"
+                android:textSize="24sp" />
+
+            <Spinner
+                android:id="@+id/fuel_type_spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_weight="1" />
+            android:onClick="onDialog"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <TextView
+                android:id="@+id/fuel_brand_title_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:text="Fuel Brand"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/fuel_brand_names"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:text="Select Brands"
+                android:textSize="18sp" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <TextView
+                android:id="@+id/radiusText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:text="Radius"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/radiusValue"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:text="0km"
+                android:textSize="24sp" />
+
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="2"
-        android:onClick="onDialog"
-        >
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2">
 
+            <SeekBar
+                android:id="@+id/radiusSeekBar"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
+                android:layout_weight="2"
+                android:layout_margin="10dp"
+                android:max="49"
+                android:progress="1"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@color/colorPrimary" >
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2">
         <TextView
-            android:id="@+id/fuel_brand_title_text"
+            android:id="@+id/CurrentLabel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_weight="1"
-            android:text="Fuel Brand"
-            android:textSize="24sp" />
+            android:layout_margin="5dp"
+            android:layout_weight="2"
+            android:textStyle="bold"
+            android:text="Current Settings"
+            android:textSize="18sp" />
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/fuel_brand_names"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="10dp"
-            android:text="Select Brands"
-            android:textSize="18sp"/>
+            android:orientation="horizontal"
+            android:weightSum="2">
+            <TextView
+                android:id="@+id/CurrentFuelTypeLabel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:text="Fuel Type: "
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/CurrentFuelTypeDisplay"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:text="Fuel Type"
+                android:textSize="18sp" />
+
+        </LinearLayout>
 
 
-    </LinearLayout>
-    </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2">
+            <TextView
+                android:id="@+id/CurrentRadiusLabel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:text="Radius:"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/currentRadiusDisplay"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:text="0km"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@color/colorPrimary" >
+        </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/returnButton"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="bottom"
+            android:layout_margin="20dp"
+            android:layout_weight="1"
+            app:backgroundTint="@color/colorPrimaryDark"
+            app:fabSize="mini"
+            app:srcCompat="?attr/actionModeCloseDrawable" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/save_filter_button"
@@ -80,6 +211,9 @@
             app:backgroundTint="@color/colorPrimaryDark"
             app:fabSize="mini"
             app:srcCompat="@android:drawable/ic_menu_save" />
+
     </LinearLayout>
+
+</LinearLayout>
 
 </LinearLayout>

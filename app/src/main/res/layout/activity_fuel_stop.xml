@@ -325,16 +325,37 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="2">
+        android:weightSum="3">
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/returnButton"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="bottom"
+            android:layout_margin="1dp"
+            android:layout_weight="0"
+            app:backgroundTint="@color/colorPrimaryDark"
+            app:fabSize="mini"
+            app:srcCompat="?attr/actionModeCloseDrawable" />
 
         <Button
             android:id="@+id/deleteVehicleButton"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-
+            android:layout_width="fill_parent"
+            android:layout_height="56dp"
+            android:layout_weight="3"
             android:background="@android:color/holo_red_dark"
             android:text="Delete vehicle" />
-    </LinearLayout>
 
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/helpButton"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="bottom"
+            android:layout_margin="1dp"
+            android:layout_weight="0"
+            app:backgroundTint="@color/colorPrimaryDark"
+            app:fabSize="mini"
+            app:srcCompat="@android:drawable/ic_menu_info_details" />
+    </LinearLayout>
 
 </LinearLayout>

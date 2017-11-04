@@ -32,7 +32,7 @@ public class FuelListActivity extends Activity {
         RVAdapter adapter = new RVAdapter(stationList);
         rv.setAdapter(adapter);
 
-        FloatingActionButton mapViewBtn = (FloatingActionButton)findViewById(R.id.map_view_button);
+        FloatingActionButton mapViewBtn = (FloatingActionButton)findViewById(R.id.returnButton);
         mapViewBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

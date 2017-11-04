@@ -1,6 +1,7 @@
 package inft3970.fuelapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -93,6 +94,8 @@ public class PostcodeChartDisplay extends FragmentActivity {
             @Override
             public void onClick(View view) {
                 finish();
+                Intent intent = new Intent(getBaseContext(), FuelChartActivity.class);
+                startActivity(intent);
             }
         });
     }
