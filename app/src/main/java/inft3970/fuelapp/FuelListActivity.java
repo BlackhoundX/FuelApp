@@ -11,16 +11,28 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Created by shane on 14/09/2017.
+ * Class: FuelListActivity
+ * Author: Shane
+ * Purpose: This class handles the Recycler View for displaying each instance of Fuel Station object,
+ * and displays them in list view.
+ * Creation Date: 14-Sep-17
+ * Modification Date: 05-Nov-17
  */
 
 public class FuelListActivity extends Activity {
 
+    /**
+     * Method: onCreate
+     * Purpose: Automatically is called when the class is created. It sets up the list of stations,
+     * sets up the Recycler, and initialises the Return button.
+     * Returns: None
+     */
     @Override
     protected void onCreate(Bundle savedInstanceBundle) {
         super.onCreate(savedInstanceBundle);
         setContentView(R.layout.activity_fuel_list);
 
+        //Gets the list of stations
         ArrayList<HashMap<String, String>> stationList = (ArrayList<HashMap<String, String>>) getIntent().getSerializableExtra("station_list");
 
         RecyclerView rv = (RecyclerView)findViewById(R.id.rv);
@@ -40,5 +52,4 @@ public class FuelListActivity extends Activity {
             }
         });
     }
-
 }

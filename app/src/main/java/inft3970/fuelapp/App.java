@@ -4,7 +4,12 @@ import android.app.Application;
 import android.content.Context;
 
 /**
- * Created by shane on 11/09/2017.
+ * Class: App
+ * Author: Shane
+ * Purpose: This is the root class of the app. It sets up the context and gathers the Authorisation code
+ * for NSW Fuel API.
+ * Creation Date: 11-Sep-17
+ * Modification Date: 05-Nov-17
  */
 
 public class App extends Application {

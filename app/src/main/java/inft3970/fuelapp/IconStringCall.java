@@ -1,14 +1,13 @@
 package inft3970.fuelapp;
 
 /**
- * Created by shane on 16/10/2017.
+ * Class: IconStringCall
+ * Author: Shane/Matt
+ * Purpose: This class takes in the string of the petrol station brand name
+ * and returns a string containing the relevant image filename, contained in the Assets folder
+ * Creation Date: 16-Oct-17
+ * Modification Date: 05-Nov-17
  */
-
-/*
-        This method takes in the string of the petrol station brand name
-        and returns a string containing the relevant image filename, contained
-        in the Assets folder
-        */
 
 public class IconStringCall {
     public static String getIconString(String brand) {

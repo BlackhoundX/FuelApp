@@ -26,8 +26,6 @@ import java.util.List;
 import static inft3970.fuelapp.FuelStopActivity.googleID;
 import static inft3970.fuelapp.FuelStopActivity.round;
 
-
-
 /**
  * Class: FuelAnalyticsActivity
  * Author: Matt Couch

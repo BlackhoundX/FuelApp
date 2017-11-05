@@ -5,13 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
@@ -21,7 +19,7 @@ import com.firebase.client.Firebase;
  * Author: Matt Couch
  * Purpose: This class displays the requested chart from Firebase Storage.
  * Creation Date: 30-Oct-17
- * Modification Date: 01-Nov-17
+ * Modification Date: 05-Nov-17
  */
 
 public class FuelChartActivity extends FragmentActivity implements AdapterView.OnItemClickListener{
@@ -122,12 +120,10 @@ public class FuelChartActivity extends FragmentActivity implements AdapterView.O
     }
 
     /**
-     * Method: onItemSelected
-     * Purpose: The listener for the postcode spinner. It allows the user to select a postcode.
-     * Returns: None
+     * Method: isValid
+     * Purpose: Checks that the input postcode is valid.
+     * Returns: A boolean indicating the validity of the entered postcode.
      */
-
-
     public boolean isValid(){
         boolean valid = false;
         String input = postCodeSpinner.getEditableText().toString();

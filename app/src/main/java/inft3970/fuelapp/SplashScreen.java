@@ -7,8 +7,22 @@ import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 
+/**
+ * Class: SplashScreen
+ * Author: Shane
+ * Purpose: This class displays the introduction splash screen when the app is launched
+ * Creation Date: 01-Nov-17
+ * Modification Date: 05-Nov-17
+ */
+
 public class SplashScreen extends AppCompatActivity {
 
+    /**
+     * Method: onCreate
+     * Purpose: Automatically is called when the class is created. It sets up the display and
+     * calls the method to control the Splash Screen
+     * Returns: None
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -16,9 +30,14 @@ public class SplashScreen extends AppCompatActivity {
         startSplash();
     }
 
+    /**
+     * Method: startSplash
+     * Purpose: This method handles the display of the splash screen
+     * Returns: None
+     */
     public void startSplash() {
         Animation fadeout = new AlphaAnimation(1.f, 1.f);
-        fadeout.setDuration(2500);
+        fadeout.setDuration(2500); //Time is set to 2.5 seconds
         final View gifImageView = findViewById(R.id.splash_screen);
         fadeout.setAnimationListener(new Animation.AnimationListener() {
             @Override

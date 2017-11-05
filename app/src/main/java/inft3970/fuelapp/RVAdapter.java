@@ -1,11 +1,8 @@
 package inft3970.fuelapp;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -16,17 +13,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-
-import org.w3c.dom.Text;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Time;
 import java.text.DateFormat;
-import java.text.FieldPosition;
 import java.text.ParseException;
-import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,7 +25,11 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by shane on 15/09/2017.
+ * Class: RVAdapter
+ * Author: Shane
+ * Purpose: This class handles the Recycler View for displaying each instance of the Fuel Station object.
+ * Creation Date: 15-Sep-17
+ * Modification Date: 05-Nov-17
  */
 
 public class RVAdapter extends RecyclerView.Adapter<RVAdapter.StationViewHolder> {
@@ -44,15 +38,31 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.StationViewHolder>
     ArrayList<HashMap<String, String>> stationList;
     Context context = App.getContext();
 
+    /**
+     * Method: RVAdapter
+     * Purpose: Acts as the constructor of this class. Points the Station List object to the list
+     * created in FuelListActivity which is filled out.
+     * Returns: None
+     */
     RVAdapter(ArrayList stationList) {
         this.stationList = stationList;
     }
 
+    /**
+     * Method: getItemCount
+     * Purpose: Retrieves the length of the list being used. This is called by the Recycler View itself
+     * Returns: The size of the list as an integer
+     */
     @Override
     public int getItemCount() {
         return stationList.size();
     }
 
+    /**
+     * Method: onCreateViewHolder
+     * Purpose: Creates the layout for the recycler to populate with data, and calls the method to create each Holder
+     * Returns: The constructed holder
+     */
     @Override
     public StationViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.fuel_card, viewGroup, false);
@@ -60,6 +70,13 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.StationViewHolder>
         return svh;
     }
 
+    /**
+     * Class: StationViewHolder
+     * Author: Shane
+     * Purpose: This class creates each individual instance of the data container for display, and initialises the fields
+     * Creation Date: 15-Sep-17
+     * Modification Date: 05-Nov-17
+     */
     public static class StationViewHolder extends RecyclerView.ViewHolder {
         CardView cv;
         TextView stationName;
@@ -68,8 +85,6 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.StationViewHolder>
         TextView stationLastUpdated;
         TextView stationKmFromPoint;
         ImageView stationIcon;
-
-
 
         StationViewHolder(View itemView) {
             super(itemView);
@@ -83,6 +98,12 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.StationViewHolder>
         }
     }
 
+    /**
+     * Method: onBindViewHolder
+     * Purpose: Takes in the Holder object and populates it with data based on the integer input as
+     * a reference to the particular series of data.
+     * Returns: None
+     */
     @Override
     public void onBindViewHolder(final StationViewHolder stationViewHolder, final int i) {
         stationViewHolder.cv.setClickable(true);
@@ -132,11 +153,21 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.StationViewHolder>
         }
     }
 
+    /**
+     * Method: onAttachedToRecyclerView
+     * Purpose: Automatically generated method which is called on by the Recycler as it starts observing this Adapter
+     * Returns: None
+     */
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
     }
 
+    /**
+     * Method: getFormattedLastUpdated
+     * Purpose: Gets the date of last updated fuel price for a station, and formats it.
+     * Returns: A string with the formatted time of last update
+     */
     private String getFormattedLastUpdated(String lastUpdated) {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
         Date lastUpdatedDate = null;

@@ -37,13 +37,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
 /**
  * Class: FuelStopActivity
  * Author: Matt Couch
  * Purpose: This class allows the user to manage their vehicles and fuel stops.
  * Creation Date: 13-Oct-17
- * Modification Date: 30-Oct-17
+ * Modification Date: 05-Nov-17
  */
 
 public class FuelStopActivity extends FragmentActivity implements AdapterView.OnItemSelectedListener, GoogleApiClient.OnConnectionFailedListener {
@@ -183,7 +182,7 @@ public class FuelStopActivity extends FragmentActivity implements AdapterView.On
             @Override
             public void onClick(View view) {
                 AlertDialog helpScreen = displayHelp();
-                helpScreen.show();
+                helpScreen.show(); //Display the Help dialog
             }
         });
 
@@ -481,6 +480,11 @@ public class FuelStopActivity extends FragmentActivity implements AdapterView.On
         return builder.create();
     }
 
+    /**
+     * Method: displayHelp
+     * Purpose: This method builds the message containing the Help.
+     * Returns: The built alert dialog, ready for display.
+     */
     public AlertDialog displayHelp() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(FuelStopActivity.this);
         builder.setTitle("Fuel Stop Help");

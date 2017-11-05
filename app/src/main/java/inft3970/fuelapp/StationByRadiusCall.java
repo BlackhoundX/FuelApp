@@ -1,6 +1,5 @@
 package inft3970.fuelapp;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -8,20 +7,21 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Created by shane on 11/09/2017.
+ * Class: StationByRadiusCall
+ * Author: Shane
+ * Purpose: This class handles the request for stations within a specified radius, by querying the
+ * NSW Fuel API.
+ * Creation Date: 11-Sep-17
+ * Modification Date: 05-Nov-17
  */
 
 public class StationByRadiusCall {
@@ -33,6 +33,14 @@ public class StationByRadiusCall {
     private static String body;
     private ArrayList returnStationList;
 
+
+    /**
+     * Method: getStationsByRadius
+     * Purpose: This method begins the process of getting the list of stations. It does some checking to
+     * ensure that there are no errors, and calls the getFuelStationsRadius method to perform the
+     * more complex functionality.
+     * Returns: An ArrayList of all the stations recieved in the request.
+     */
     public ArrayList getStationsByRadius(String[][] stationHeaders, String body, ProgressBar progressBar) {
         stationList = new ArrayList<>();
         headers = stationHeaders;
@@ -45,21 +53,45 @@ public class StationByRadiusCall {
         return returnStationList;
     }
 
+
+    /**
+     * Class: getFuelStationsRadius
+     * Author: Shane
+     * Purpose: This subclass handles the actual request for stations, and includes some methods
+     * to assist this process.
+     * Creation Date: 11-Sep-17
+     * Modification Date: 05-Nov-17
+     */
     private class getFuelStationsRadius extends AsyncTask<Void, Void, ArrayList> {
 
         private final ProgressBar progressBar;
 
+        /**
+         * Method: getFuelStationsRadius
+         * Purpose: This method is a constructor for the class.
+         * Returns: None.
+         */
         public getFuelStationsRadius(final ProgressBar progressBar) {
             this.progressBar = progressBar;
         }
 
-
+        /**
+         * Method: onPreExecute
+         * Purpose: This method begins the process of handling the background requests.
+         * Returns: None.
+         */
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             progressBar.setVisibility(View.VISIBLE);
         }
 
+        /**
+         * Method: doInBackground
+         * Purpose: This method performs the request itself, gathering the fuel station data and
+         * saving it into an ArrayList for use in the app.
+         * Returns: An ArrayList of all the stations recieved in the request.
+         */
         @Override
         protected ArrayList doInBackground(Void...arg0) {
                 HttpHandler httpHdlr = new HttpHandler();
@@ -73,9 +105,9 @@ public class StationByRadiusCall {
                         JSONArray stations = jsonObject.getJSONArray("stations");
                         JSONArray prices = jsonObject.getJSONArray("prices");
 
+                        //Loop through each station received.
                         for (int countItem = 0; countItem < stations.length(); countItem++) {
                             JSONObject itemStation = stations.getJSONObject(countItem);
-
 
                             String brand = itemStation.getString("brand");
                             int code = itemStation.getInt("code");
@@ -97,8 +129,7 @@ public class StationByRadiusCall {
                                 }
                             }
 
-
-
+                            //Save the collected data into a Hashmap
                             HashMap<String, String> station = new HashMap<>();
                             station.put("brand", brand);
                             station.put("code", Integer.toString(code));
@@ -110,9 +141,9 @@ public class StationByRadiusCall {
                             station.put("price", Double.toString(price));
                             station.put("lastUpdated", lastUpdated);
 
+                            //Add the hashmap to the ArrayList
                             stationList.add(station);
                         }
-
                     } catch (final JSONException e) {
                         Log.e(TAG, "Json parsing error: " + e.getMessage());
                         fuelMap.runOnUiThread(new Runnable() {
@@ -138,10 +169,15 @@ public class StationByRadiusCall {
                         }
                     });
                 }
-
+            //Return the completed list of all stations
             return stationList;
         }
 
+        /**
+         * Method: onPostExecute
+         * Purpose: This method ends the background request processing.
+         * Returns: None.
+         */
         @Override
         protected void onPostExecute(ArrayList result) {
             super.onPostExecute(result);

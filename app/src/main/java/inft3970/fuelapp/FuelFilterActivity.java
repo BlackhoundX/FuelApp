@@ -4,15 +4,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.widget.TextViewCompat;
-import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -23,14 +19,16 @@ import java.io.File;
 import java.util.ArrayList;
 
 /**
- * Created by shane on 7/10/2017.
+ * Class: FuelFilterActivity
+ * Author: Shane
+ * Purpose: This class allows the user to filter display of fuel data, based on brand, type and radius.
+ * Creation Date: 7-Oct-17
+ * Modification Date: 05-Nov-17
  */
 
 public class FuelFilterActivity extends Activity implements AdapterView.OnItemSelectedListener {
     Spinner fuelTypeList;
-    String[] fuelNames;
-    ArrayList<String> selectedBrands;
-    String selectedType;
+
     TextView brandListText;
     TextView radiusText;
     TextView currentRadius;
@@ -38,38 +36,56 @@ public class FuelFilterActivity extends Activity implements AdapterView.OnItemSe
 
     FloatingActionButton saveButton;
     FloatingActionButton returnButton;
+
     AlertDialog brandDialog = null;
+
+    SeekBar radiusBar;
+
     private boolean allSelected = true;
+
+    ArrayList<String> selectedBrands;
+    String selectedType;
+    String[] fuelNames;
+
     private int arrayLength;
     private int radiusSize;
-    SeekBar radiusBar;
 
     Context context;
 
+    /**
+     * Method: onCreate
+     * Purpose: Automatically is called when the class is created. It instantiates the various display
+     * fields and sets up the Listeners for the buttons and objects.
+     * Returns: None
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fuel_filter);
+
         fuelTypeList = (Spinner)findViewById(R.id.fuel_type_spinner);
+
         brandListText = (TextView)findViewById(R.id.fuel_brand_names);
         radiusText = (TextView)findViewById(R.id.radiusValue);
-
         currentRadius = (TextView)findViewById(R.id.currentRadiusDisplay);
         currentType = (TextView)findViewById(R.id.CurrentFuelTypeDisplay);
 
         saveButton = (FloatingActionButton)findViewById(R.id.save_filter_button);
         returnButton = (FloatingActionButton)findViewById(R.id.returnButton);
+
         arrayLength = getResources().getStringArray(R.array.brands).length;
+
         radiusBar = (SeekBar)findViewById(R.id.radiusSeekBar);
+
         context = App.getContext();
 
         fuelTypeList.setOnItemSelectedListener(this);
         fuelNames = getResources().getStringArray(R.array.fuel_names);
 
         ArrayAdapter<String> fuelTypeAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, fuelNames);
-
         fuelTypeList.setAdapter(fuelTypeAdapter);
 
+        //Create the listener for the Return button
         returnButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -77,6 +93,7 @@ public class FuelFilterActivity extends Activity implements AdapterView.OnItemSe
             }
         });
 
+        //Create the listener for the Save button
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,11 +118,13 @@ public class FuelFilterActivity extends Activity implements AdapterView.OnItemSe
             }
         });
 
+        //Create the listeners for the Radius bar
         radiusBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int progressChangedValue = 0;
+            //Tracks the changes
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                progressChangedValue = i + 1;
+                progressChangedValue = i + 1; //Seek bars default to a minimum value of 0, so adding 1 sets the minimum radius to 1
             }
 
             @Override
@@ -114,15 +133,18 @@ public class FuelFilterActivity extends Activity implements AdapterView.OnItemSe
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                radiusText.setText(progressChangedValue + "km");
+                radiusText.setText(progressChangedValue + "km"); //Display the new radius
                 radiusSize = progressChangedValue;
             }
         });
-
-        getSettings();
-
+        getSettings(); //Read the settings from the XML file on the device
     }
 
+    /**
+     * Method: getSettings
+     * Purpose: Reads the settings from the XML file
+     * Returns: None
+     */
     private void getSettings() {
         String fuelType = "";
         int savedRadius = 1;
@@ -132,8 +154,8 @@ public class FuelFilterActivity extends Activity implements AdapterView.OnItemSe
         if(settingsFile.exists()) {
             XmlSettings xmlSettings = new XmlSettings();
             settingsList = xmlSettings.readXml();
-            fuelType = settingsList.get(0);
-            savedRadius = Integer.parseInt(settingsList.get(2));
+            fuelType = settingsList.get(0); //Get the Fuel Type
+            savedRadius = Integer.parseInt(settingsList.get(2)); //Get the radius size
         } else {
             fuelType = "No Default Selected";
             savedRadius = 5;
@@ -142,6 +164,11 @@ public class FuelFilterActivity extends Activity implements AdapterView.OnItemSe
         currentType.setText(fuelType);
     }
 
+    /**
+     * Method: onDialog
+     * Purpose: Sets up and displays the list of Brands
+     * Returns: None
+     */
     public void onDialog(View v) {
         brandDialog = createFuelBrandDialog(null);
         brandDialog.show();
@@ -152,7 +179,7 @@ public class FuelFilterActivity extends Activity implements AdapterView.OnItemSe
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 boolean isChecked = brandList.isItemChecked(position);
                 if(position == 0) {
-                    if(allSelected) {
+                    if(allSelected) { //Handles the selection of all brands
                         for(int i = 0;i < arrayLength; i++) {
                             if((isChecked && !brandList.isItemChecked(i)) || (!isChecked && brandList.isItemChecked(i))) {
                                 if(!brandList.isItemChecked(i)) {
@@ -180,8 +207,14 @@ public class FuelFilterActivity extends Activity implements AdapterView.OnItemSe
         });
     }
 
-
+    /**
+     * Method: createFuelBrandDialog
+     * Purpose: Creates the dialog allowing the user to select the brand of fuel
+     * Returns: The build dialog box, ready for display
+     */
     public AlertDialog createFuelBrandDialog(Bundle savedInstanceState) {
+
+        //Checks all the boxes at the start of the display
         boolean[] selectedItems = new boolean[arrayLength];
         selectedItems[0] = false;
         for(int i = 1; i < selectedItems.length; i++){
@@ -210,6 +243,11 @@ public class FuelFilterActivity extends Activity implements AdapterView.OnItemSe
         return builder.create();
     }
 
+    /**
+     * Method: createNoSavedDataDialog
+     * Purpose: Creates the dialog warning the user that a field was left blank
+     * Returns: The built dialog box, ready for display
+     */
     public AlertDialog createNoSavedDataDialog(Bundle savedInstanceState) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(FuelFilterActivity.this);
         builder.setTitle("Warning");
@@ -217,7 +255,6 @@ public class FuelFilterActivity extends Activity implements AdapterView.OnItemSe
         builder.setPositiveButton("Return", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
             }
         });
         builder.setNegativeButton("Exit", new DialogInterface.OnClickListener() {
@@ -229,6 +266,12 @@ public class FuelFilterActivity extends Activity implements AdapterView.OnItemSe
         return builder.create();
     }
 
+    /**
+     * Method: getBrandNamesText
+     * Purpose: Gets the brand names in full. Takes in an Array List of brand names, and a boolean
+     * to determine if the set was for XML or not.
+     * Returns: The string containing the brand name.
+     */
     public String getBrandNamesText(ArrayList<String> brandNames, boolean setForXml) {
         String brandText = "";
         if(brandNames.size() == 21 && !setForXml) {
@@ -245,6 +288,11 @@ public class FuelFilterActivity extends Activity implements AdapterView.OnItemSe
         return brandText;
     }
 
+    /**
+     * Method: onItemSelected
+     * Purpose: Listener for when an item is selected from the Spinner object.
+     * Returns: None.
+     */
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         selectedType = parent.getItemAtPosition(position).toString();

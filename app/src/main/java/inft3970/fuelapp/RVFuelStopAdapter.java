@@ -49,9 +49,9 @@ public class RVFuelStopAdapter extends RecyclerView.Adapter<RVFuelStopAdapter.Fu
     }
 
     /**
-     * Method: FuelStopHolder
+     * Method: onCreateViewHolder
      * Purpose: Creates the layout for the recycler to populate with data, and calls the method to create each Holder
-     * Returns: None
+     * Returns: The constructed holder
      */
     @Override
     public FuelStopHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
@@ -117,6 +117,7 @@ public class RVFuelStopAdapter extends RecyclerView.Adapter<RVFuelStopAdapter.Fu
     /**
      * Method: onAttachedToRecyclerView
      * Purpose: Automatically generated method which is called on by the Recycler as it starts observing this Adapter
+     * Returns: None
      */
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {

@@ -17,7 +17,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
-
 /**
  * Class: PostcodeChartDisplay
  * Author: Matt Couch
@@ -30,7 +29,6 @@ public class PostcodeChartDisplay extends FragmentActivity {
     Context context;
     ImageView chartImage;
     StorageReference storageRef = FirebaseStorage.getInstance().getReference();  //Gets the reference to the Firebase Storage location
-
 
     /**
      * Method: onCreate

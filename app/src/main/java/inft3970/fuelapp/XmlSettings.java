@@ -32,12 +32,26 @@ import javax.xml.parsers.ParserConfigurationException;
 /**
  * Created by shane on 7/10/2017.
  */
+/**
+ * Class: XmlSettings
+ * Author: Shane
+ * Purpose: This class handles the creation and management of the Settings xml file, which is
+ * stored on the individual device.
+ * Creation Date: 7-Oct-17
+ * Modification Date: 05-Nov-17
+ */
+
 
 public class XmlSettings {
     public  static final String TAG = XmlSettings.class.getSimpleName();
-
     Context context = App.getContext();
 
+    /**
+     * Method: writeXml
+     * Purpose: This method writes the XML file, which stores the user's settings data. It takes in
+     * an array of Strings, containing the data to be saved.
+     * Returns: None
+     */
     public void writeXml(String[] settingData) {
         FileOutputStream fos;
 
@@ -72,6 +86,12 @@ public class XmlSettings {
         }
     }
 
+    /**
+     * Method: readXml
+     * Purpose: This class reads data from the XML file, storing the data into an array of Strings
+     * and returning the data.
+     * Returns: An array of strings containing the user's preference data.
+     */
     public ArrayList<String> readXml() {
         FileInputStream fis = null;
         InputStreamReader isr = null;

@@ -11,13 +11,14 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.StringTokenizer;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Created by shane on 11/09/2017.
+ * Class: AuthCodeCall
+ * Author: Shane
+ * Purpose: This class handles the gathering of the Authorisation code, for use with NSW Fuel API.
+ * Creation Date: 11-Sep-17
+ * Modification Date: 05-Nov-17
  */
 
 public class AuthCodeCall {
@@ -28,6 +29,13 @@ public class AuthCodeCall {
     private String authCode;
     private String returnCode;
     private static String[] authHeaders;
+
+    /**
+     * Method: getAuthCode
+     * Purpose: This method creates an instance of the call for authorisation code, and returns the
+     * code upon success.
+     * Returns: String containing the authorisation code
+     */
     public String getAuthCode(String[] authHeader, ProgressBar progressBar) {
         authHeaders = authHeader;
         try {
@@ -38,21 +46,42 @@ public class AuthCodeCall {
         return returnCode;
     }
 
+    /**
+     * Class: getAuthOCode
+     * Author: Shane
+     * Purpose: This class handles the actual gathering of the Authorisation code, for use with NSW Fuel API.
+     * Creation Date: 11-Sep-17
+     * Modification Date: 05-Nov-17
+     */
     private class getAuthOCode extends AsyncTask<Void, Void, String> {
 
         private ProgressBar progressBar;
 
+        /**
+         * Method: getAuthOCode
+         * Purpose: This acts as the constructor for the class.
+         * Returns: None.
+         */
         public getAuthOCode(ProgressBar progressBar) {
             this.progressBar = progressBar;
         }
 
-
+        /**
+         * Method: onPreExecute
+         * Purpose: This method begins the process of handling the background requests.
+         * Returns: None.
+         */
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             progressBar.setVisibility(View.VISIBLE);
         }
 
+        /**
+         * Method: doInBackground
+         * Purpose: This method performs the request itself, gathering the authorisation code for use in the app.
+         * Returns: A string containing the authorisation code.
+         */
         @Override
         protected String doInBackground(Void... arg0) {
             HttpHandler httpHdlr = new HttpHandler();
@@ -74,7 +103,6 @@ public class AuthCodeCall {
                                     .show();
                         }
                     });
-
                 }
             } else {
                 Log.e(TAG, "Couldn't get json from server.");
@@ -91,6 +119,11 @@ public class AuthCodeCall {
             return authCode;
         }
 
+        /**
+         * Method: onPostExecute
+         * Purpose: This method ends the background request processing.
+         * Returns: None.
+         */
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);

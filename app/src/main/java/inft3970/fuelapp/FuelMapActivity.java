@@ -11,7 +11,6 @@ import android.graphics.Paint;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
@@ -23,23 +22,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.OptionalPendingResult;
-import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.PlaceDetectionClient;
-import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -66,6 +53,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
+/**
+ * Class: FuelMapActivity
+ * Author: Shane
+ * Purpose: This class handles the creation of the main activity. It displays the map and handles
+ * the creation of all the map markers, as well as providing the links to the other aspects of the app.
+ * Creation Date: 01-Sep-17
+ * Modification Date: 05-Nov-17
+ */
 public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCallback{
 
     private static final String TAG = FuelMapActivity.class.getSimpleName();
@@ -87,9 +82,6 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
     private final String KEY_CAMERA_POSITION = "camera_position";
     private final String KEY_LOCATION = "location";
 
-    //public GoogleApiClient mGoogleApiClient;
-    //private static final int RC_SIGN_IN = 9001;
-
     private boolean mLocationPermissionGranted;
 
     private String authCode;
@@ -106,27 +98,35 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
     ArrayList<HashMap<String, String>> stationList;
     String[] stationType = new String[]{"7-Eleven","BP", "Budget","Caltex","Caltex Woolworths","Coles Express","Costco","Enhance","Independent","Liberty","Lowes","Matilda","Metro Fuel","Mobil","Prime Petroleum","Puma Energy","Shell","Speedway","Tesla","United","Westside"};
 
+    /**
+     * Method: onCreate
+     * Purpose: This method is called when the map is first created. It creates the objects to be
+     * displayed on the screen, activates the map itself, and handles the authorisation key for
+     * NSW Fuel API. It also calls the back end methods for the management of information.
+     * Returns: None.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         App.setContext(this);
 
+        //Checks if the app was already open prior to launch; usually if the user switches tasks.
         if(savedInstanceState != null) {
             mLastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
             mCameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
         }
 
+        //Create the objects to be displayed on screen
         setContentView(R.layout.activity_fuel_map);
         pBar = (ProgressBar)findViewById(R.id.progressBar);
         final CardView searchCardView = (CardView)findViewById(R.id.search_card_view);
         fuelNameText = (TextView)findViewById(R.id.fuel_name_text);
         fuelNameCard = (CardView)findViewById(R.id.fuel_name_card);
 
+        //Handles the authorisation code for NSW Fuel API
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         fuelAPIKey = getString(R.string.fuel_api_key);
         authHeaders = new String[]{"Authorization", getResources().getString(R.string.fuel_api_base64)};
-
         AuthCodeCall codeCall = new AuthCodeCall();
         authCode = codeCall.getAuthCode(authHeaders, pBar);
         App.setAuthCode(authCode);
@@ -144,15 +144,14 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(placeLatLng));
                 searchCardView.setVisibility(View.GONE);
                 fuelNameCard.setVisibility(View.VISIBLE);
-
             }
-
             @Override
             public void onError(Status status) {
 
             }
         });
 
+        //Creates the listener for the List View button
         FloatingActionButton listViewBtn = (FloatingActionButton)findViewById(R.id.list_view_button);
         listViewBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,6 +162,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
             }
         });
 
+        //Creates the listener for the Filter button
         FloatingActionButton filterBtn = (FloatingActionButton)findViewById(R.id.filter_button);
         filterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -172,6 +172,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
             }
         });
 
+        //Creates the listener for the Search button
         final FloatingActionButton searchBtn = (FloatingActionButton)findViewById(R.id.search_button);
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -188,6 +189,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
             }
         });
 
+        //Creates the listener for the Fuel Stop button
         FloatingActionButton fuelStop = (FloatingActionButton)findViewById(R.id.fuel_tracking_button);
         fuelStop.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -197,6 +199,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
             }
         });
 
+        //Creates the listener for the Fuel Chart button
         FloatingActionButton fuelChartButton = (FloatingActionButton)findViewById(R.id.viewChartButton);
         fuelChartButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -207,6 +210,11 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         });
     }
 
+    /**
+     * Method: onSaveInstanceState
+     * Purpose: This method saves the current state of the map for if the user switches tasks on the device
+     * Returns: None.
+     */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         if(mMap != null) {
@@ -217,7 +225,10 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
     }
 
     /**
-     * Does stuff
+     * Method: onMapReady
+     * Purpose: This method is called when the map is recentered and ready for use. It handles the
+     * display of nearby fuel stations and sets up a Listener for each marker.
+     * Returns: None.
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -227,9 +238,10 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         mMap.setMinZoomPreference(6.5f);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(NSW.getCenter(), 6.5f));
         mMap.getUiSettings().setMapToolbarEnabled(false);
-        getLocationPermission();
-        updateLocationUI();
-        getDeviceLocation();
+
+        getLocationPermission();    //Check the permissions are valid
+        updateLocationUI();         //Update the location
+        getDeviceLocation();        //Get the device location
         mMap.setOnCameraIdleListener(new OnCameraIdleListener() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
@@ -285,7 +297,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                             Bitmap mutBitmap = unmutBitmap.copy(Bitmap.Config.ARGB_8888, true);
                             iconBitmap = Bitmap.createBitmap(unmutBitmap.getWidth() + 65, (unmutBitmap.getHeight() + 50), Bitmap.Config.ARGB_8888);
                             Canvas priceText = new Canvas(iconBitmap);
-                            if(cheapStationCode.equals(stationCode)) {
+                            if(cheapStationCode.equals(stationCode)) { //Highlight the station as green if it is cheaper
                                 Paint textStyle = new Paint();
                                 textStyle.setColor(Color.GREEN);
                                 textStyle.setTextAlign(Paint.Align.CENTER);
@@ -305,9 +317,11 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
                         } catch (IOException e) {
                             Log.e(TAG, e.getMessage());
                         }
+                        //Adds the marker with the gathered details
                         mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(stationCode).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)));
                     }
                 }
+                //Sets the listener for each marker
                 mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker marker) {
@@ -322,6 +336,11 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         });
     }
 
+    /**
+     * Method: getDeviceLocation
+     * Purpose: Gets the user's location and moves the map to be centered there.
+     * Returns: None.
+     */
     public void getDeviceLocation() {
         try {
             if (mLocationPermissionGranted) {
@@ -347,6 +366,11 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         }
     }
 
+    /**
+     * Method: getLocationPermissions
+     * Purpose: Checks that the user has granted location permissions, asking to accept if they have not
+     * Returns: None.
+     */
     public void getLocationPermission() {
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
@@ -355,6 +379,11 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         }
     }
 
+    /**
+     * Method: onRequestPermissionsResult
+     * Purpose: Handles some checks in relation to the Location management
+     * Returns: None.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         mLocationPermissionGranted = false;
@@ -368,6 +397,11 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         updateLocationUI();
     }
 
+    /**
+     * Method: updateLocationUI
+     * Purpose: Updates the user's location
+     * Returns: None.
+     */
     public void updateLocationUI() {
         if (mMap == null) {
             return;
@@ -387,6 +421,11 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         }
     }
 
+    /**
+     * Method: getSettings
+     * Purpose: Retrieves the user's saved settings.
+     * Returns: An ArrayList containing the user's settings
+     */
     private String getAllStations() {
         String allStations = "";
         for(String station:stationType) {
@@ -395,6 +434,11 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         return allStations;
     }
 
+    /**
+     * Method: getSettings
+     * Purpose: Retrieves the user's saved settings.
+     * Returns: An ArrayList containing the user's settings
+     */
     private ArrayList<String> getSettings() {
         File settingsFile = new File(this.getFilesDir() + "/Settings.xml");
         ArrayList<String> settingsList = new ArrayList<>();
@@ -410,6 +454,7 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
             settingsList.remove(1);
             settingsList.add(1, brandString);
 
+            //Checks if the user is running an older version of the XML file, which did not contain the Radius setting
             if(settingsList.size() == 3){
                 radiusKm = Integer.parseInt(settingsList.get(2));
             }
@@ -421,6 +466,11 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         return settingsList;
     }
 
+    /**
+     * Method: getStationData
+     * Purpose: Retrieves the data for each station. Takes in an Array List of stations and the code for the required station
+     * Returns: A Hashmap containing the data for the selected station
+     */
     private HashMap<String, String> getStationData(ArrayList<HashMap<String, String>> stationList, String code) {
         HashMap returnList = null;
         for (HashMap<String, String> station:stationList) {
@@ -436,6 +486,11 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         return returnList;
     }
 
+    /**
+     * Method: getCheapestStation
+     * Purpose: Searches the list of stations displayed and finds the cheapest of them all.
+     * Returns: A string containing the code of the cheapest station.
+     */
     private String getCheapestStation(ArrayList<HashMap<String,String>> stationList) {
         String cheapestCode = stationList.get(0).get("code");
         Double cheapestPrice = Double.parseDouble(stationList.get(0).get("price"));

@@ -14,7 +14,12 @@ import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Created by shane on 1/11/2017.
+ * Class: PlaceDetailsCall
+ * Author: Shane
+ * Purpose: This class handles the gathering of details for a fuel station including Phone Number, Rating,
+ * Open Hours, Reviews, and Website.
+ * Creation Date: 01-Nov-17
+ * Modification Date: 05-Nov-17
  */
 
 public class PlaceDetailsCall {
@@ -24,6 +29,12 @@ public class PlaceDetailsCall {
     private PlaceDetails placeDetails = new PlaceDetails();
     private static String placeID;
 
+    /**
+     * Method: getPlaceDetails
+     * Purpose: This method begins the process of gathering the details of a place. It takes in a
+     * string containing the Place ID as a reference point.
+     * Returns: An object containing the details of the particular place.
+     */
     public PlaceDetails getPlaceDetails(String placeID) {
         PlaceDetailsCall.placeID = placeID;
         try {
@@ -34,13 +45,31 @@ public class PlaceDetailsCall {
         return placeDetails;
     }
 
+    /**
+     * Class: getPlaceDetailsCall
+     * Author: Shane
+     * Purpose: This class performs the query to NSW Fuel API, performing the tasks in the background.
+     * Creation Date: 01-Nov-17
+     * Modification Date: 05-Nov-17
+     */
     private class getPlaceDetailsCall extends AsyncTask<Void, Void, PlaceDetails> {
 
+        /**
+         * Method: onPreExecute
+         * Purpose: This method begins the process of handling the background requests.
+         * Returns: None.
+         */
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
         }
 
+        /**
+         * Method: doInBackground
+         * Purpose: This method performs the request itself, gathering the place data and
+         * saving it into object of PlaceDetails for use in the app.
+         * Returns: An object containing the details of the place.
+         */
         @Override
         protected PlaceDetails doInBackground(Void... arg0) {
             HttpHandler httpHandler = new HttpHandler();
@@ -52,16 +81,19 @@ public class PlaceDetailsCall {
                     JSONObject jsonObject = new JSONObject(jsonStr);
                     JSONObject result = jsonObject.getJSONObject("result");
 
+                    //Get the phone number
                     if(result.has("formatted_phone_number")) {
                         String phoneNumber = result.getString("formatted_phone_number");
                         placeDetails.setPhoneNumber(phoneNumber);
                     }
 
+                    //Get the rating
                     if(result.has("rating")) {
                         Double rating = result.getDouble("rating");
                         placeDetails.setRating(rating);
                     }
 
+                    //Get the open hours
                     if(result.has("opening_hours")) {
                         ArrayList<String> openTimes = new ArrayList<>();
                         JSONObject openingHours = result.getJSONObject("opening_hours");
@@ -73,6 +105,7 @@ public class PlaceDetailsCall {
                         placeDetails.setOpenTimes(openTimes);
                     }
 
+                    //Get the reviews
                     if(result.has("reviews")) {
                         ArrayList<HashMap<String, String>> reviewsArray = new ArrayList<>();
                         JSONArray reviews = result.getJSONArray("reviews");
@@ -96,6 +129,7 @@ public class PlaceDetailsCall {
                         placeDetails.setReviews(reviewsArray);
                     }
 
+                    //Get the website
                     if(result.has("website")) {
                         String website = result.getString("website");
                         placeDetails.setWebsite(website);
@@ -112,7 +146,6 @@ public class PlaceDetailsCall {
                                     .show();
                         }
                     });
-
                 }
             } else {
                 Log.e(TAG, "Couldn't get json from server.");
@@ -126,10 +159,14 @@ public class PlaceDetailsCall {
                     }
                 });
             }
-
             return placeDetails;
         }
 
+        /**
+         * Method: onPostExecute
+         * Purpose: This method ends the background request processing.
+         * Returns: None.
+         */
         @Override
         protected void onPostExecute(PlaceDetails result) {
             super.onPostExecute(result);

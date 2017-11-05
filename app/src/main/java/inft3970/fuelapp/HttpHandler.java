@@ -1,6 +1,5 @@
 package inft3970.fuelapp;
 
-import android.nfc.Tag;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -11,17 +10,25 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
-import java.util.Arrays;
 
 /**
- * Created by shane on 9/09/2017.
+ * Class: HTTPHandler
+ * Author: Shane
+ * Purpose: This class handles the conversion of data from Stream to String, for use in HTTP URLs
+ * Creation Date: 09-Sep-17
+ * Modification Date: 05-Nov-17
  */
 
 public class HttpHandler {
     private static final String TAG = HttpHandler.class.getSimpleName();
 
+    /**
+     * Method: getServiceCall
+     * Purpose: Makes the request for the HTTP stream, and handles the response. It takes in a String with the
+     * URL, a string containing the connection type, an Array of Strings for the headers, and a String for the body of the request.
+     * Returns: A string containing the response.
+     */
     public String getServiceCall(String reqUrl, String conType, String[][] headers, String body) {
         String response = null;
         try {
@@ -49,10 +56,14 @@ public class HttpHandler {
         return response;
     }
 
+    /**
+     * Method: convertStreamToString
+     * Purpose: Converts an input stream to a string. It takes in an Input Stream from which it reads.
+     * Returns: The converted string, read from the input stream.
+     */
     private String convertStreamToString(InputStream is) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
-
         String line;
         try {
             while ((line = reader.readLine()) != null) {
@@ -70,6 +81,12 @@ public class HttpHandler {
         return sb.toString();
     }
 
+    /**
+     * Method: getAuthServiceCall
+     * Purpose: Makes the authorised request for the HTTP stream, and handles the response. It takes in a String with the
+     * URL, a string containing the connection type, an Array of Strings for the headers, and a String for the body of the request.
+     * Returns: A string containing the response.
+     */
     public String getAuthServiceCall(String reqUrl, String conType, String[] headers, String body) {
         String response = null;
         try {
@@ -95,5 +112,4 @@ public class HttpHandler {
         }
         return response;
     }
-
 }

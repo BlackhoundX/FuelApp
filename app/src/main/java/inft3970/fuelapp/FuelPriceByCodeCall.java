@@ -14,7 +14,11 @@ import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Created by shane on 15/10/2017.
+ * Class: FuelPriceByCodeCall
+ * Author: Shane
+ * Purpose: This class handles the gathering of a fuel price based on the Fuel Code
+ * Creation Date: 15-Oct-17
+ * Modification Date: 05-Nov-17
  */
 
 public class FuelPriceByCodeCall {
@@ -26,6 +30,13 @@ public class FuelPriceByCodeCall {
     private static String[][] headers;
     private ArrayList returnFuelList;
 
+    /**
+     * Method: getFuelPricesByCode
+     * Purpose: This method begins the process of gathering the fuel details. It takes in a
+     * string containing the fuel code and an array of Strings containing the argument headers for
+     * the request from NSW Fuel API.
+     * Returns: An array list containing the fuel price details.
+     */
     public ArrayList getFuelPricesByCode(String fuelCode, String[][] headers) {
         fuelList = new ArrayList<>();
         FuelPriceByCodeCall.fuelCode = fuelCode;
@@ -38,12 +49,31 @@ public class FuelPriceByCodeCall {
         return returnFuelList;
     }
 
+    /**
+     * Class: getFuelPricesCode
+     * Author: Shane
+     * Purpose: This class performs the query to NSW Fuel API, performing the tasks in the background.
+     * Creation Date: 15-Oct-17
+     * Modification Date: 05-Nov-17
+     */
     private class getFuelPricesCode extends AsyncTask<Void, Void, ArrayList> {
+
+        /**
+         * Method: onPreExecute
+         * Purpose: This method begins the process of handling the background requests.
+         * Returns: None.
+         */
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
         }
 
+        /**
+         * Method: doInBackground
+         * Purpose: This method performs the request itself, gathering the fuel type, price and time of
+         * last update and putting it into an Array List for use in the app.
+         * Returns: An array list containing the fuel type, price and time of last update.
+         */
         @Override
         protected ArrayList doInBackground(Void...arg0) {
             HttpHandler httpHandler = new HttpHandler();
@@ -53,7 +83,6 @@ public class FuelPriceByCodeCall {
             if(jsonStr != null) {
                 try {
                     JSONObject jsonObject = new JSONObject(jsonStr);
-
                     JSONArray prices = jsonObject.getJSONArray("prices");
 
                     for(int countItem = 0;countItem < prices.length();countItem++) {
@@ -97,6 +126,11 @@ public class FuelPriceByCodeCall {
             return fuelList;
         }
 
+        /**
+         * Method: onPostExecute
+         * Purpose: This method ends the background request processing.
+         * Returns: None.
+         */
         @Override
         protected void onPostExecute(ArrayList result) {
             super.onPostExecute(result);
