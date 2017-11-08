@@ -103,14 +103,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "320080581866-q5snvp9ums04qds721a2rhpuvr8fgffh.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "inft3970.fuelapp",
-            "certificate_hash": "ad48485d3049951d6b9c5b65a51539eafab198bb"
-          }
-        },
-        {
           "client_id": "320080581866-2glq650vde9oltphlfeph83lqfq9nam1.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

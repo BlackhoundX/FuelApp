@@ -26,30 +26,7 @@
         android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
         />
     </android.support.v7.widget.CardView>
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/list_view_button"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_gravity="bottom|right"
-        android:layout_margin="10dp"
-        android:clickable="true"
-        android:scaleType="center"
-        app:backgroundTint="@color/colorPrimaryDark"
-        app:fabSize="mini"
-        app:srcCompat="@drawable/list"
-        android:focusable="true" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/filter_button"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_gravity="bottom|center"
-        android:layout_margin="10dp"
-        android:clickable="true"
-        app:backgroundTint="@color/colorPrimaryDark"
-        app:fabSize="mini"
-        app:srcCompat="@drawable/filter_icon"
-        android:focusable="true" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -60,30 +37,18 @@
         android:layout_margin="10dp"/>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/search_button"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_gravity="bottom|left"
-        android:layout_margin="10dp"
-        android:clickable="true"
-        app:backgroundTint="@color/colorPrimaryDark"
-        app:fabSize="mini"
-        app:srcCompat="@drawable/places_ic_search"
-        android:focusable="true" />
-
-    <android.support.design.widget.FloatingActionButton
         android:id="@+id/fuel_tracking_button"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:clickable="true"
         android:layout_gravity="bottom|right"
-        app:backgroundTint="@color/colorPrimaryDark"
         android:layout_marginBottom="80dp"
         android:layout_marginRight="10dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:backgroundTint="@color/colorPrimaryDark"
         app:elevation="0dp"
         app:fabSize="mini"
-        app:srcCompat="@android:drawable/ic_input_get"
-        android:focusable="true" />
+        app:srcCompat="@drawable/car_icon" />
 
 
     <android.support.v7.widget.CardView
@@ -104,6 +69,41 @@
     </android.support.v7.widget.CardView>
 
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/closeSearchButton"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_gravity="top|right"
+        android:layout_marginBottom="7dp"
+        android:clickable="true"
+        android:visibility="invisible"
+        app:backgroundTint="@color/colorPrimaryDark"
+        app:srcCompat="@android:drawable/presence_offline" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/filter_button"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom|center"
+        android:layout_margin="10dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:backgroundTint="@color/colorPrimaryDark"
+        app:fabSize="mini"
+        app:srcCompat="@drawable/filter_icon" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/search_button"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom|left"
+        android:layout_margin="10dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:backgroundTint="@color/colorPrimaryDark"
+        app:fabSize="mini"
+        app:srcCompat="@drawable/search_icon" />
+
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/viewChartButton"
         android:layout_width="56dp"
         android:layout_height="56dp"
@@ -114,17 +114,20 @@
         android:clickable="true"
         android:focusable="true"
         app:backgroundTint="@color/colorPrimaryDark"
-        app:srcCompat="@android:drawable/ic_menu_sort_by_size" />
+        app:fabSize="mini"
+        app:srcCompat="@drawable/stats_icon" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/closeSearchButton"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_gravity="top|right"
-        android:layout_marginBottom="7dp"
+        android:id="@+id/list_view_button"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="10dp"
         android:clickable="true"
-        android:visibility="invisible"
+        android:focusable="true"
+        android:scaleType="center"
         app:backgroundTint="@color/colorPrimaryDark"
-        app:srcCompat="@android:drawable/presence_offline" />
+        app:fabSize="mini"
+        app:srcCompat="@drawable/list_icon" />
 
 </FrameLayout>

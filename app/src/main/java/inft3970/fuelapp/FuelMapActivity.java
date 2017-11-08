@@ -177,12 +177,12 @@ public class FuelMapActivity extends AppCompatActivity implements OnMapReadyCall
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(searchCardView.getVisibility() == View.GONE) {
+                if(searchCardView.getVisibility() == View.GONE || searchCardView.getVisibility() == View.INVISIBLE) {
                     searchBtn.setImageResource(R.drawable.places_ic_clear);
                     fuelNameCard.setVisibility(View.GONE);
                     searchCardView.setVisibility(View.VISIBLE);
                 } else {
-                    searchBtn.setImageResource(R.drawable.places_ic_search);
+                    searchBtn.setImageResource(R.drawable.search_icon);
                     fuelNameCard.setVisibility(View.VISIBLE);
                     searchCardView.setVisibility(View.GONE);
                 }

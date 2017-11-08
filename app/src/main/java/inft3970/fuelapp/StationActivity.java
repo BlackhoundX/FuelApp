@@ -16,6 +16,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -54,6 +55,7 @@ public class StationActivity extends Activity {
     private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a", Locale.ENGLISH);
     Context context = App.getContext();
     private GeoDataClient mGeoDataClient = Places.getGeoDataClient(context, null);
+    DisplayMetrics metrics = new DisplayMetrics();
     private int transactionId = 0;
     private String authCode;
     ArrayList fuelPrices;
@@ -73,6 +75,7 @@ public class StationActivity extends Activity {
         authCode = App.getAuthCode();
         Date time = new Date();
         String timeString = dateFormat.format(time);
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
         //Initialise the display objects
         final TextView stationName = (TextView) findViewById(R.id.station_name_text);
@@ -137,6 +140,7 @@ public class StationActivity extends Activity {
         FuelPriceAdapter adapter = new FuelPriceAdapter(fuelPrices);
         stationFuelRv.setAdapter(adapter);
         stationFuelRv.getLayoutParams().height = 375 * adapter.getItemCount();
+        stationFuelRv.getLayoutParams().width = metrics.widthPixels;
 
         //Get the reviews for the station from Google Business, if any.
         if (placeDetails.getReviews() != null) {
