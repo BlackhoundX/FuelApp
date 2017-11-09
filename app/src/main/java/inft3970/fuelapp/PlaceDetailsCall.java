@@ -79,60 +79,74 @@ public class PlaceDetailsCall {
             if (jsonStr != null) {
                 try {
                     JSONObject jsonObject = new JSONObject(jsonStr);
-                    JSONObject result = jsonObject.getJSONObject("result");
 
-                    //Get the phone number
-                    if(result.has("formatted_phone_number")) {
-                        String phoneNumber = result.getString("formatted_phone_number");
-                        placeDetails.setPhoneNumber(phoneNumber);
-                    }
+                    if(jsonObject.has("result")) {
+                        JSONObject result = jsonObject.getJSONObject("result");
 
-                    //Get the rating
-                    if(result.has("rating")) {
-                        Double rating = result.getDouble("rating");
-                        placeDetails.setRating(rating);
-                    }
-
-                    //Get the open hours
-                    if(result.has("opening_hours")) {
-                        ArrayList<String> openTimes = new ArrayList<>();
-                        JSONObject openingHours = result.getJSONObject("opening_hours");
-                        JSONArray openTimesArray = openingHours.getJSONArray("weekday_text");
-                        for (int countItem = 0; countItem < openTimesArray.length(); countItem++) {
-                            String openTimeText = openTimesArray.getString(countItem);
-                            openTimes.add(openTimeText);
+                        //Get the phone number
+                        if (result.has("formatted_phone_number")) {
+                            String phoneNumber = result.getString("formatted_phone_number");
+                            placeDetails.setPhoneNumber(phoneNumber);
                         }
-                        placeDetails.setOpenTimes(openTimes);
-                    }
 
-                    //Get the reviews
-                    if(result.has("reviews")) {
-                        ArrayList<HashMap<String, String>> reviewsArray = new ArrayList<>();
-                        JSONArray reviews = result.getJSONArray("reviews");
-                        for (int countItem = 0; countItem < reviews.length(); countItem++) {
-                            JSONObject review = reviews.getJSONObject(countItem);
-                            String authorName = review.getString("author_name");
-                            String photoURL = review.getString("profile_photo_url");
-                            Double reviewRating = review.getDouble("rating");
-                            String time = review.getString("relative_time_description");
-                            String reviewText = review.getString("text");
-
-                            HashMap<String, String> reviewHash = new HashMap<>();
-                            reviewHash.put("authorName", authorName);
-                            reviewHash.put("photoUrl", photoURL);
-                            reviewHash.put("rating", Double.toString(reviewRating));
-                            reviewHash.put("time", time);
-                            reviewHash.put("reviewText", reviewText);
-
-                            reviewsArray.add(reviewHash);
+                        //Get the rating
+                        if (result.has("rating")) {
+                            Double rating = result.getDouble("rating");
+                            placeDetails.setRating(rating);
                         }
-                        placeDetails.setReviews(reviewsArray);
-                    }
 
-                    //Get the website
-                    if(result.has("website")) {
-                        String website = result.getString("website");
-                        placeDetails.setWebsite(website);
+                        //Get the open hours
+                        if (result.has("opening_hours")) {
+                            ArrayList<String> openTimes = new ArrayList<>();
+                            JSONObject openingHours = result.getJSONObject("opening_hours");
+                            JSONArray openTimesArray = openingHours.getJSONArray("weekday_text");
+                            for (int countItem = 0; countItem < openTimesArray.length(); countItem++) {
+                                String openTimeText = openTimesArray.getString(countItem);
+                                openTimes.add(openTimeText);
+                            }
+                            placeDetails.setOpenTimes(openTimes);
+                        }
+
+                        //Get the reviews
+                        if (result.has("reviews")) {
+                            ArrayList<HashMap<String, String>> reviewsArray = new ArrayList<>();
+                            JSONArray reviews = result.getJSONArray("reviews");
+                            for (int countItem = 0; countItem < reviews.length(); countItem++) {
+                                JSONObject review = reviews.getJSONObject(countItem);
+                                String authorName = review.getString("author_name");
+                                String photoURL = review.getString("profile_photo_url");
+                                Double reviewRating = review.getDouble("rating");
+                                String time = review.getString("relative_time_description");
+                                String reviewText = review.getString("text");
+
+                                HashMap<String, String> reviewHash = new HashMap<>();
+                                reviewHash.put("authorName", authorName);
+                                reviewHash.put("photoUrl", photoURL);
+                                reviewHash.put("rating", Double.toString(reviewRating));
+                                reviewHash.put("time", time);
+                                reviewHash.put("reviewText", reviewText);
+
+                                reviewsArray.add(reviewHash);
+                            }
+                            placeDetails.setReviews(reviewsArray);
+                        }
+
+                        //Get the website
+                        if (result.has("website")) {
+                            String website = result.getString("website");
+                            placeDetails.setWebsite(website);
+                        }
+                    } else {
+                        Log.e(TAG, "Cannot Find Result");
+                        stationActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(context,
+                                        "Cannot Find Place Details",
+                                        Toast.LENGTH_LONG)
+                                        .show();
+                            }
+                        });
                     }
 
                 } catch (final JSONException e) {

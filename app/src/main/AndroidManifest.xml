@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="inft3970.fuelapp">
+    package="inft3970.fuelapp"
+    android:versionCode="1"
+    android:versionName="1.0">
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
